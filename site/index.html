@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f0e6">
-    <meta name="description" content="See the weekly standings for Sunday Pick'em.">
-    <title>Leaderboard | Sunday Pick'em</title>
+    <meta name="description" content="See the weekly standings for Mahaffey Mutiny Pick'em.">
+    <title>Leaderboard | Mahaffey Mutiny Pick'em</title>
     <script>
       if (!localStorage.getItem("pickem.session")) {
         location.replace(new URL("access/", location.href));
@@ -19,14 +19,17 @@
   </head>
   <body data-root="./" data-protected>
     <header class="site-header">
-      <a class="brand" href="./" aria-label="Sunday Pick'em home">
+      <a class="brand" href="./" aria-label="Mahaffey Mutiny Pick'em home">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
-        <span>Sunday Pick'em</span>
+        <span>Mahaffey Mutiny Pick'em</span>
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="./" aria-current="page">Leaderboard</a>
         <a href="picks/">Picks</a>
-        <button class="account-button" type="button" data-logout title="Sign out"><span data-username>Player</span> <span aria-hidden="true">↗</span></button>
+        <div class="account-menu">
+          <span class="account-name" data-username>Player</span>
+          <button class="sign-out-button" type="button" data-logout>Sign out</button>
+        </div>
       </nav>
     </header>
 
@@ -35,7 +38,6 @@
         <div>
           <p class="eyebrow">Weekly standings</p>
           <h1 id="page-title">Leaderboard</h1>
-          <p class="intro">Pick winners. Talk trash. Claim Sunday.</p>
         </div>
         <div class="week-chip" aria-label="Season status">
           <span class="status-dot" aria-hidden="true"></span>
@@ -102,7 +104,7 @@
     </main>
 
     <footer>
-      <p>Sunday Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
+      <p>Mahaffey Mutiny Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
       <p>Built for bragging rights.</p>
     </footer>
   </body>

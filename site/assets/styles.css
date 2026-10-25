@@ -132,19 +132,35 @@ a { color: inherit; }
   background: var(--orange);
 }
 
-.account-button {
+.account-menu {
   align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.account-name {
+  max-width: 140px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sign-out-button {
   padding: 7px 10px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 3px;
   color: var(--ink-soft);
   background: rgba(255, 253, 247, 0.6);
   font: 600 0.75rem "DM Sans", sans-serif;
   cursor: pointer;
 }
 
-.account-button:hover,
-.account-button:focus-visible { color: var(--ink); border-color: var(--ink-soft); }
+.sign-out-button:hover,
+.sign-out-button:focus-visible { color: var(--ink); border-color: var(--ink-soft); }
 
 main {
   width: min(1120px, calc(100% - 48px));
@@ -763,7 +779,13 @@ footer p { margin: 0; }
   .brand-mark { width: 30px; height: 21px; }
   .site-nav { gap: 12px; }
   .site-nav a { font-size: 0.78rem; }
-  .account-button span:first-child { display: none; }
+  .site-header {
+    padding-top: 16px;
+    flex-wrap: wrap;
+  }
+  .site-header .brand { width: 100%; justify-content: center; }
+  .site-nav { width: 100%; min-height: 52px; justify-content: center; }
+  .account-name { max-width: 82px; }
   .page-heading { padding: 56px 0 30px; display: block; }
   .page-heading h1 { font-size: 3.8rem; }
   .week-chip { margin-top: 24px; }
