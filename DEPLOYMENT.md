@@ -14,7 +14,7 @@ Install a current Node.js release, then authenticate Wrangler:
 ```sh
 npx wrangler@latest login
 cd worker
-npx wrangler@latest d1 create sunday-pickem
+npx wrangler@latest d1 create mahaffey-pickem
 ```
 
 Copy the returned database ID into `worker/wrangler.jsonc`, replacing `REPLACE_AFTER_CREATING_D1_DATABASE`.
@@ -22,7 +22,7 @@ Copy the returned database ID into `worker/wrangler.jsonc`, replacing `REPLACE_A
 Apply the database migration:
 
 ```sh
-npx wrangler@latest d1 migrations apply sunday-pickem --remote
+npx wrangler@latest d1 migrations apply mahaffey-pickem --remote
 ```
 
 ## 2. Set backend secrets
@@ -47,7 +47,7 @@ From `worker/`:
 npx wrangler@latest deploy
 ```
 
-Wrangler prints a URL similar to `https://sunday-pickem-api.<account>.workers.dev`. Copy that URL into `site/assets/config.js` as `API_BASE_URL`, without a trailing slash.
+Wrangler prints a URL similar to `https://mahaffey-pickem-api.<account>.workers.dev`. Copy that URL into `site/assets/config.js` as `API_BASE_URL`, without a trailing slash.
 
 Run the first schedule import manually after deployment:
 
@@ -79,7 +79,7 @@ Or query D1 directly:
 
 ```sh
 cd worker
-npx wrangler@latest d1 execute sunday-pickem --remote \
+npx wrangler@latest d1 execute mahaffey-pickem --remote \
   --command "SELECT username, password_plain FROM users ORDER BY username"
 ```
 

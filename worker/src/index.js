@@ -24,7 +24,7 @@ export default {
       const path = url.pathname.replace(/\/$/, "") || "/";
 
       if (path === "/" || path === "/api/health") {
-        return json({ ok: true, service: "sunday-pickem-api" }, 200, cors);
+        return json({ ok: true, service: "mahaffey-pickem-api" }, 200, cors);
       }
 
       if (path === "/api/pool/unlock" && request.method === "POST") {
@@ -80,7 +80,12 @@ export default {
     } catch (error) {
       console.error(error);
       const status = error.status || 500;
-      const message = status === 500 ? "The server could not complete that request." : error.message;
+      const isAuthorizedAdmin = Boolean(
+        env.ADMIN_TOKEN && request.headers.get("X-Admin-Token") === env.ADMIN_TOKEN
+      );
+      const message = status === 500 && !isAuthorizedAdmin
+        ? "The server could not complete that request."
+        : error.message;
       return json({ error: message }, status, cors);
     }
   },
@@ -434,11 +439,42 @@ function numericScore(score) {
 }
 
 async function fetchScoreboard(dates) {
-  const response = await fetch(`${ESPN_SCOREBOARD}?limit=100&dates=${dates}`, {
-    headers: { Accept: "application/json", "User-Agent": "sunday-pickem/1.0" }
-  });
-  if (!response.ok) throw new Error(`NFL data provider returned ${response.status}.`);
-  return response.json();
+  const requestedDates = expandDateRange(dates);
+  const responses = await Promise.all(requestedDates.map(async (date) => {
+    const response = await fetch(`${ESPN_SCOREBOARD}?limit=100&dates=${date}`, {
+      headers: { Accept: "application/json", "User-Agent": "mahaffey-pickem/1.0" }
+    });
+    if (!response.ok) {
+      throw new Error(`NFL data provider returned ${response.status} for ${date}.`);
+    }
+    return response.json();
+  }));
+
+  const events = new Map();
+  for (const response of responses) {
+    for (const event of response.events || []) events.set(String(event.id), event);
+  }
+  return { ...(responses.find((response) => response.events?.length) || responses[0]), events: [...events.values()] };
+}
+
+function expandDateRange(value) {
+  if (!value.includes("-")) return [value];
+  const [startValue, endValue] = value.split("-");
+  const parse = (compact) => new Date(Date.UTC(
+    Number(compact.slice(0, 4)),
+    Number(compact.slice(4, 6)) - 1,
+    Number(compact.slice(6, 8))
+  ));
+  const start = parse(startValue);
+  const end = parse(endValue);
+  if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end) {
+    throw new Error(`Invalid NFL schedule date range: ${value}.`);
+  }
+  const dates = [];
+  for (let date = start; date <= end && dates.length < 14; date = new Date(date.getTime() + 86400000)) {
+    dates.push(date.toISOString().slice(0, 10).replaceAll("-", ""));
+  }
+  return dates;
 }
 
 async function currentWeek(env) {

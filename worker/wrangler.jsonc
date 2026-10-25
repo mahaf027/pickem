@@ -1,24 +1,26 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "sunday-pickem-api",
+  "name": "mahaffey-pickem-api",
   "main": "src/index.js",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": true,
+  },
   "vars": {
     "POOL_PASSWORD": "Mutiny",
     "FRONTEND_ORIGIN": "https://mahaf027.github.io",
-    "SESSION_DAYS": "90"
+    "SESSION_DAYS": "90",
   },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "sunday-pickem",
-      "database_id": "REPLACE_AFTER_CREATING_D1_DATABASE",
-      "migrations_dir": "migrations"
-    }
+      "database_name": "mahaffey-pickem",
+      "database_id": "dfc03e22-632f-4973-a239-721768be9f6f",
+      "migrations_dir": "migrations",
+    },
   ],
   "triggers": {
-    "crons": ["*/10 * * * *"]
-  }
+    "crons": ["*/10 * * * *"],
+  },
 }
