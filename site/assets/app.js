@@ -49,16 +49,26 @@ export function currentUser() {
   }
 }
 
-export function requireSession() {
+export async function requireSession() {
   if (!localStorage.getItem(TOKEN_KEY)) {
     redirectToAccess();
     return false;
   }
-  const user = currentUser();
-  document.querySelectorAll("[data-username]").forEach((element) => {
-    element.textContent = user?.username || "Player";
-  });
-  return true;
+  try {
+    const { user } = await api("/api/me");
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    document.querySelectorAll("[data-username]").forEach((element) => {
+      element.textContent = user.username;
+    });
+    document.documentElement.classList.remove("auth-pending");
+    return true;
+  } catch (error) {
+    // api() handles expired sessions and redirects to access. For connection
+    // failures, reveal the page so its normal error treatment can be shown.
+    document.documentElement.classList.remove("auth-pending");
+    showPageError(error.message);
+    return false;
+  }
 }
 
 export function redirectToAccess() {

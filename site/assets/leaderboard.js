@@ -8,7 +8,10 @@ import {
   wireLogout
 } from "./app.js";
 
-if (requireSession()) {
+initialize();
+
+async function initialize() {
+  if (!(await requireSession())) return;
   wireLogout();
   loadLeaderboard();
 }

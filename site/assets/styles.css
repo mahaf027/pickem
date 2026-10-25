@@ -18,6 +18,10 @@ html {
   background: var(--paper);
 }
 
+html.auth-pending body[data-protected] {
+  visibility: hidden;
+}
+
 body {
   min-height: 100vh;
   margin: 0;

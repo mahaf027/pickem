@@ -1,18 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="auth-pending">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f0e6">
     <meta name="description" content="See the weekly standings for Sunday Pick'em.">
     <title>Leaderboard | Sunday Pick'em</title>
+    <script>
+      if (!localStorage.getItem("pickem.session")) {
+        location.replace(new URL("access/", location.href));
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
     <script type="module" src="assets/leaderboard.js"></script>
   </head>
-  <body data-root="./">
+  <body data-root="./" data-protected>
     <header class="site-header">
       <a class="brand" href="./" aria-label="Sunday Pick'em home">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
