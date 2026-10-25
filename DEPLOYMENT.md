@@ -111,7 +111,7 @@ curl -X POST "https://YOUR-WORKER-URL/api/admin/import-splash" \
   --data @data/splash-2026.json
 ```
 
-The file format is `{"season": 2026, "weeks": [{"week": 1, "picks": {"Splash name": ["KC", "BUF", ...]}}]}`, with one winner per game. Any game a listed player has no pick for is stored as a missed pick (a loss), matching Splash. The response lists any picks that could not be matched to a game.
+The file format is `{"season": 2026, "weeks": [{"week": 1, "picks": {"Splash name": ["KC", "BUF", ...]}}]}`, with one winner per game; a trailing `*` (e.g. `"NE*"`) marks a Splash auto-pick. Any game a listed player has no pick for is stored as a missed pick (a loss), matching Splash. The response lists any picks that could not be matched to a game.
 
 Link an account that existed before the import to its Splash name:
 

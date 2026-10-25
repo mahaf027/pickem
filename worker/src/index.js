@@ -453,10 +453,10 @@ async function importSplash(body, env) {
   const report = { players: names.length, picks: 0, missed: 0, unmatched: [], missingWeeks: [] };
   const statements = [];
   const upsert = `INSERT INTO picks (user_id, game_id, selected_team_id, is_auto, source)
-                  VALUES (?, ?, ?, 0, 'splash')
+                  VALUES (?, ?, ?, ?, 'splash')
                   ON CONFLICT(user_id, game_id) DO UPDATE SET
                     selected_team_id = excluded.selected_team_id,
-                    is_auto = 0,
+                    is_auto = excluded.is_auto,
                     source = 'splash',
                     updated_at = CURRENT_TIMESTAMP
                   WHERE picks.is_auto = 1 OR picks.source = 'splash'`;
@@ -469,8 +469,10 @@ async function importSplash(body, env) {
     }
     for (const name of names) {
       const chosen = new Map();
+      const automatic = new Set();
       for (const raw of entry.picks?.[name] || []) {
-        const team = normalizeTeamAbbreviation(raw);
+        // A trailing "*" marks a Splash auto-pick.
+        const team = normalizeTeamAbbreviation(String(raw).replace(/\*$/, ""));
         const game = weekGames.find((candidate) =>
           [candidate.away_team_abbreviation, candidate.home_team_abbreviation]
             .map(normalizeTeamAbbreviation).includes(team));
@@ -481,6 +483,7 @@ async function importSplash(body, env) {
         chosen.set(game.id, normalizeTeamAbbreviation(game.away_team_abbreviation) === team
           ? game.away_team_id
           : game.home_team_id);
+        if (String(raw).endsWith("*")) automatic.add(game.id);
       }
       for (const game of weekGames) {
         // A game with no Splash pick is stored as a blank pick: it scores as a
@@ -488,7 +491,7 @@ async function importSplash(body, env) {
         const teamId = chosen.get(game.id) ?? "";
         if (teamId) report.picks += 1;
         else report.missed += 1;
-        statements.push(env.DB.prepare(upsert).bind(playerIds.get(name), game.id, teamId));
+        statements.push(env.DB.prepare(upsert).bind(playerIds.get(name), game.id, teamId, automatic.has(game.id) ? 1 : 0));
       }
     }
   }

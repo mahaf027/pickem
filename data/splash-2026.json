@@ -1,0 +1,146 @@
+{
+  "season": 2026,
+  "source": "Splash Sports league 'Mahaffey Mutiny', Standings > Picks by Week, captured 2026-10-25",
+  "note": "A trailing * marks a Splash auto-pick (away team after a missed deadline). splashPoints are Splash's weekly totals, used to verify the import.",
+  "weeks": [
+    {
+      "week": 1,
+      "splashPoints": {
+        "Brian-Mahaffey": 11,
+        "Nate-Tav": 11,
+        "Theo-Mahaffey": 9,
+        "big-toe-4398": 12,
+        "mahafsize": 12,
+        "rhersey_4": 8,
+        "rust-zero-5747": 9
+      },
+      "picks": {
+        "Brian-Mahaffey": ["SEA", "LA", "CHI", "JAC", "DET", "PIT", "TEN", "CIN", "BAL", "HOU", "MIN", "LAC", "LV", "PHI", "DAL", "KC"],
+        "Nate-Tav": ["SEA", "SF*", "CHI", "JAC", "DET", "PIT", "TEN", "CIN", "BAL", "BUF", "GB", "LAC", "LV", "PHI", "DAL", "DEN"],
+        "Theo-Mahaffey": ["NE", "LA", "CHI", "JAC", "DET", "PIT", "TEN", "CIN", "BAL", "BUF", "GB", "LAC", "MIA", "PHI", "NYG", "DEN"],
+        "big-toe-4398": ["SEA", "LA", "CHI", "JAC", "DET", "PIT", "TEN", "CIN", "BAL", "BUF", "MIN", "LAC", "LV", "PHI", "DAL", "KC"],
+        "mahafsize": ["SEA", "LA", "CHI", "JAC", "DET", "PIT", "NYJ", "CIN", "BAL", "BUF", "GB", "LAC", "LV", "PHI", "DAL", "KC"],
+        "rhersey_4": ["SEA", "LA", "CAR", "JAC", "DET", "PIT", "NYJ", "CIN", "BAL", "HOU", "GB", "LAC", "MIA", "PHI", "DAL", "DEN"],
+        "rust-zero-5747": ["SEA", "LA", "CHI", "JAC", "DET", "PIT", "TEN", "TB", "IND", "BUF", "GB", "LAC", "LV", "PHI", "NYG", "DEN"]
+      }
+    },
+    {
+      "week": 2,
+      "splashPoints": {
+        "Brian-Mahaffey": 11,
+        "Nate-Tav": 12,
+        "Theo-Mahaffey": 10,
+        "big-toe-4398": 11,
+        "mahafsize": 11,
+        "rhersey_4": 8,
+        "rust-zero-5747": 10
+      },
+      "picks": {
+        "Brian-Mahaffey": ["BUF", "TB", "BAL", "GB", "CAR", "CHI", "NE", "PHI", "HOU", "DEN", "LAC", "DAL", "SEA", "SF", "KC", "LA"],
+        "Nate-Tav": ["BUF", "TB", "BAL", "GB", "CAR", "CHI", "NE", "PHI", "CIN", "DEN", "LAC", "DAL", "SEA", "SF", "KC", "LA"],
+        "Theo-Mahaffey": ["BUF", "TB", "BAL", "GB", "CAR", "CHI", "PIT", "PHI", "HOU", "DEN", "LV", "WAS", "SEA", "SF", "KC", "LA"],
+        "big-toe-4398": ["BUF", "TB", "BAL", "GB", "CAR", "CHI", "NE", "PHI", "HOU", "DEN", "LAC", "DAL", "SEA", "SF", "KC", "LA"],
+        "mahafsize": ["BUF", "TB", "BAL", "GB", "ATL", "CHI", "NE", "PHI", "CIN", "DEN", "LAC", "DAL", "SEA", "SF", "KC", "LA"],
+        "rhersey_4": ["BUF", "TB", "BAL", "GB", "ATL", "CHI", "NE", "PHI", "CIN", "JAC", "LAC", "DAL", "ARI", "SF", "KC", "NYG"],
+        "rust-zero-5747": ["BUF", "TB", "BAL", "GB", "CAR", "CHI", "NE", "PHI", "HOU", "DEN", "LAC", "DAL", "SEA", "SF", "KC", "NYG"]
+      }
+    },
+    {
+      "week": 3,
+      "splashPoints": {
+        "Brian-Mahaffey": 8,
+        "Nate-Tav": 8,
+        "Theo-Mahaffey": 8,
+        "big-toe-4398": 8,
+        "mahafsize": 8,
+        "rhersey_4": 9,
+        "rust-zero-5747": 7
+      },
+      "picks": {
+        "Brian-Mahaffey": ["GB", "SEA", "BUF", "CIN", "DET", "CAR", "NYG", "HOU", "JAC", "KC", "SF", "MIN", "NO", "BAL", "LA", "PHI"],
+        "Nate-Tav": ["GB", "SEA", "BUF", "CIN", "DET", "CAR", "NYG", "IND", "NE", "KC", "SF", "MIN", "NO", "BAL", "LA", "PHI"],
+        "Theo-Mahaffey": ["GB", "SEA", "BUF", "CIN", "DET", "CAR", "TEN", "IND", "NE", "KC", "SF", "MIN", "NO", "BAL", "DEN", "PHI"],
+        "big-toe-4398": ["GB", "SEA", "BUF", "CIN", "DET", "CAR", "NYG", "HOU", "JAC", "KC", "SF", "MIN", "NO", "BAL", "LA", "PHI"],
+        "mahafsize": ["GB", "SEA", "BUF", "CIN", "DET", "CLE", "NYG", "IND", "NE", "KC", "SF", "MIN", "NO", "DAL", "LA", "PHI"],
+        "rhersey_4": ["ATL*", "SEA", "BUF", "CIN", "DET", "CAR", "NYG", "HOU", "JAC", "KC", "SF", "MIN", "NO", "BAL", "LA", "PHI"],
+        "rust-zero-5747": ["GB", "SEA", "BUF", "CIN", "NYJ", "CAR", "NYG", "HOU", "JAC", "KC", "SF", "TB", "NO", "BAL", "DEN", "PHI"]
+      }
+    },
+    {
+      "week": 4,
+      "splashPoints": {
+        "Brian-Mahaffey": 11,
+        "Nate-Tav": 9,
+        "Theo-Mahaffey": 12,
+        "big-toe-4398": 9,
+        "mahafsize": 8,
+        "rhersey_4": 9,
+        "rust-zero-5747": 13
+      },
+      "picks": {
+        "Brian-Mahaffey": ["PIT", "IND", "NYG", "BAL", "LA", "CIN", "CHI", "GB", "BUF", "HOU", "MIN", "SF", "KC", "SEA", "DET", "ATL"],
+        "Nate-Tav": ["PIT", "IND", "ARI", "BAL", "LA", "CIN", "CHI", "GB", "BUF", "HOU", "MIN", "SF", "KC", "SEA", "DET", "NO"],
+        "Theo-Mahaffey": ["PIT", "IND", "NYG", "BAL", "LA", "JAC", "CHI", "GB", "BUF", "DAL", "MIN", "SF", "KC", "SEA", "DET", "NO"],
+        "big-toe-4398": ["PIT", "IND", "ARI", "BAL", "LA", "CIN", "CHI", "GB", "BUF", "HOU", "MIN", "SF", "KC", "SEA", "DET", "NO"],
+        "mahafsize": ["PIT*", "IND*", "ARI*", "TEN*", "LA*", "JAC*", "NYJ*", "GB*", "NE*", "DAL*", "MIA*", "DEN*", "KC*", "LAC*", "DET*", "ATL*"],
+        "rhersey_4": ["PIT", "IND", "ARI", "BAL", "LA", "CIN", "CHI", "GB", "BUF", "HOU", "MIN", "SF", "KC", "SEA", "DET", "NO"],
+        "rust-zero-5747": ["PIT", "IND", "NYG", "BAL", "LA", "JAC", "CHI", "GB", "BUF", "DAL", "MIN", "SF", "KC", "SEA", "DET", "ATL"]
+      }
+    },
+    {
+      "week": 5,
+      "splashPoints": {
+        "Brian-Mahaffey": 8,
+        "Nate-Tav": 9,
+        "Theo-Mahaffey": 9,
+        "big-toe-4398": 9,
+        "mahafsize": 12,
+        "rhersey_4": 8,
+        "rust-zero-5747": 8
+      },
+      "picks": {
+        "Brian-Mahaffey": ["DAL", "JAC", "PIT", "HOU", "CIN", "CHI", "WAS", "CLE", "NE", "MIN", "DEN", "DET", "SEA", "ATL", "LA"],
+        "Nate-Tav": ["DAL", "JAC", "PIT", "HOU", "CIN", "CHI", "WAS", "CLE", "NE", "MIN", "DEN", "DET", "SF", "ATL", "LA"],
+        "Theo-Mahaffey": ["DAL", "JAC", "PIT", "HOU", "CIN", "CHI", "WAS", "NYJ", "LV", "MIN", "DEN", "DET", "SF", "ATL", "LA"],
+        "big-toe-4398": ["DAL", "JAC", "PIT", "HOU", "CIN", "CHI", "WAS", "NYJ", "NE", "MIN", "DEN", "DET", "SEA", "ATL", "LA"],
+        "mahafsize": ["TB*", "JAC", "IND", "HOU", "CIN", "GB", "WAS", "CLE", "NE", "MIN", "DEN", "DET", "SF", "BAL", "BUF"],
+        "rhersey_4": ["DAL", "JAC", "PIT", "HOU", "CIN", "GB", "NYG", "CLE", "LV", "MIN", "DEN", "ARI", "SEA", "ATL", "BUF"],
+        "rust-zero-5747": ["DAL", "JAC", "PIT", "HOU", "CIN", "CHI", "NYG", "CLE", "NE", "MIN", "DEN", "DET", "SEA", "ATL", "LA"]
+      }
+    },
+    {
+      "week": 6,
+      "splashPoints": {
+        "Brian-Mahaffey": 8,
+        "Nate-Tav": 7,
+        "Theo-Mahaffey": 7,
+        "big-toe-4398": 9,
+        "mahafsize": 7,
+        "rhersey_4": 6,
+        "rust-zero-5747": 7
+      },
+      "picks": {
+        "Brian-Mahaffey": ["SEA", "JAC", "IND", "PIT", "BAL", "CAR", "CHI", "NE", "NYG", "LA", "KC", "BUF", "GB", "SF"],
+        "Nate-Tav": ["SEA", "JAC", "IND", "PIT", "BAL", "CAR", "ATL", "NE", "NYG", "LA", "KC", "BUF", "GB", "SF"],
+        "Theo-Mahaffey": ["SEA", "JAC", "IND", "PIT", "BAL", "CAR", "ATL", "NE", "NYG", "LA", "KC", "BUF", "GB", "SF"],
+        "big-toe-4398": ["SEA*", "JAC", "IND", "PIT", "BAL", "CAR", "CHI", "NE", "NO", "LA", "KC", "BUF", "GB", "SF"],
+        "mahafsize": ["SEA*", "JAC", "IND", "PIT", "BAL", "CAR", "ATL", "NE", "NYG", "LA", "KC", "BUF", "GB", "SF"],
+        "rhersey_4": ["SEA", "JAC", "IND", "PIT", "BAL", "CAR", "ATL", "NE", "NYG", "LA", "KC", "BUF", "DAL", "SF"],
+        "rust-zero-5747": ["SEA*", "JAC", "IND", "PIT", "BAL", "CAR", "ATL", "NE", "NYG", "LA", "KC", "BUF", "GB", "SF"]
+      }
+    },
+    {
+      "week": 7,
+      "splashPoints": {},
+      "picks": {
+        "Brian-Mahaffey": ["CHI", "PIT", "CIN", "NYJ", "CLE", "CAR", "HOU", "SF", "MIN", "DEN", "DET", "LA", "KC", "DAL"],
+        "Nate-Tav": ["CHI", "PIT*", "CIN", "NYJ", "CLE", "CAR", "HOU", "SF", "MIN", "DEN", "DET", "LV", "SEA", "DAL"],
+        "Theo-Mahaffey": ["CHI", "PIT", "CIN", "NYJ", "CLE", "CAR", "NYG", "SF", "MIN", "DEN", "GB", "LA", "KC", "DAL"],
+        "big-toe-4398": ["CHI", "PIT", "BAL", "NYJ", "CLE", "CAR", "HOU", "SF", "MIN", "DEN", "DET", "LA", "SEA", "DAL"],
+        "mahafsize": ["NE*", "PIT*", "CIN*", "MIA*", "CLE*", "TB*", "NYG*", "SF*", "IND*", "DEN*", "GB*", "LA*", "KC*", "DAL*"],
+        "rhersey_4": ["NE*", "PIT", "BAL", "NYJ", "CLE", "CAR", "NYG", "SF", "MIN", "DEN", "DET", "LA", "SEA", "DAL"],
+        "rust-zero-5747": ["NE*", "PIT", "CIN", "NYJ", "CLE", "CAR", "NYG", "SF", "MIN", "DEN", "DET", "LA", "KC", "DAL"]
+      }
+    }
+  ]
+}
