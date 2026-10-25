@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sunday-pickem-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "vars": {
+    "POOL_PASSWORD": "Mutiny",
+    "FRONTEND_ORIGIN": "https://mahaf027.github.io",
+    "SESSION_DAYS": "90"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sunday-pickem",
+      "database_id": "REPLACE_AFTER_CREATING_D1_DATABASE",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/10 * * * *"]
+  }
+}

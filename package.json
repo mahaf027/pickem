@@ -1,0 +1,9 @@
+{
+  "name": "sunday-pickem",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check worker/src/index.js && node --check worker/src/domain.js && node --check site/assets/app.js && node --check site/assets/access.js && node --check site/assets/picks.js && node --check site/assets/leaderboard.js"
+  }
+}

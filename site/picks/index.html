@@ -10,9 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/styles.css">
-    <script src="../assets/app.js" defer></script>
+    <script type="module" src="../assets/picks.js"></script>
   </head>
-  <body>
+  <body data-root="../">
     <header class="site-header">
       <a class="brand" href="../" aria-label="Sunday Pick'em home">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
@@ -21,6 +21,7 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../">Leaderboard</a>
         <a href="./" aria-current="page">Picks</a>
+        <button class="account-button" type="button" data-logout title="Sign out"><span data-username>Player</span> <span aria-hidden="true">↗</span></button>
       </nav>
     </header>
 
@@ -33,7 +34,7 @@
         </div>
         <div class="week-chip" aria-label="Picks status">
           <span class="status-dot" aria-hidden="true"></span>
-          Not yet open
+          <span data-week-label>Loading week…</span>
         </div>
       </section>
 
@@ -43,10 +44,19 @@
             <p class="kicker">Upcoming slate</p>
             <h2 id="games-title">This week’s games</h2>
           </div>
-          <span class="record-label">0 games</span>
+          <span class="record-label" data-game-count>Loading games…</span>
         </div>
 
-        <div class="empty-state">
+        <div class="loading-state" data-loading>
+          <span class="loading-ball" aria-hidden="true"></span>
+          <p>Loading this week’s games…</p>
+        </div>
+
+        <div class="page-error" data-page-error hidden></div>
+
+        <div class="games-list" data-games hidden></div>
+
+        <div class="empty-state" data-empty hidden>
           <div class="empty-icon picks-icon" aria-hidden="true">
             <span class="check-line check-line-one"></span>
             <span class="check-line check-line-two"></span>
@@ -60,7 +70,7 @@
 
       <aside class="notice" aria-label="Picks privacy note">
         <span class="notice-icon" aria-hidden="true">i</span>
-        <p>Your picks stay private until <strong>10:00 AM Pacific on Sunday.</strong></p>
+        <p>Your picks stay private until <strong data-reveal-time>10:00 AM Pacific on Sunday.</strong></p>
       </aside>
     </main>
 

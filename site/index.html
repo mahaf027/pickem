@@ -10,9 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/styles.css">
-    <script src="assets/app.js" defer></script>
+    <script type="module" src="assets/leaderboard.js"></script>
   </head>
-  <body>
+  <body data-root="./">
     <header class="site-header">
       <a class="brand" href="./" aria-label="Sunday Pick'em home">
         <span class="brand-mark" aria-hidden="true"><span></span></span>
@@ -21,6 +21,7 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a href="./" aria-current="page">Leaderboard</a>
         <a href="picks/">Picks</a>
+        <button class="account-button" type="button" data-logout title="Sign out"><span data-username>Player</span> <span aria-hidden="true">↗</span></button>
       </nav>
     </header>
 
@@ -33,7 +34,7 @@
         </div>
         <div class="week-chip" aria-label="Season status">
           <span class="status-dot" aria-hidden="true"></span>
-          Season setup
+          <span data-week-label>Loading week…</span>
         </div>
       </section>
 
@@ -43,17 +44,26 @@
             <p class="kicker">This week</p>
             <h2 id="standings-title">Standings</h2>
           </div>
-          <span class="record-label">Correct picks</span>
+          <span class="record-label" data-pick-visibility>Loading picks…</span>
         </div>
 
-        <div class="empty-state">
+        <div class="loading-state" data-loading>
+          <span class="loading-ball" aria-hidden="true"></span>
+          <p>Loading the board…</p>
+        </div>
+
+        <div class="page-error" data-page-error hidden></div>
+
+        <div class="leaderboard-wrap" data-leaderboard hidden></div>
+
+        <div class="empty-state" data-empty hidden>
           <div class="empty-icon" aria-hidden="true">
             <span class="yard-line yard-line-one"></span>
             <span class="football"></span>
             <span class="yard-line yard-line-two"></span>
           </div>
           <h3>The field is wide open</h3>
-          <p>No scores yet. Once the season begins, everyone’s weekly record will show up here.</p>
+          <p>No schedule has been imported yet. Once the next slate is available, everyone’s weekly record will show up here.</p>
           <a class="button" href="picks/">Head to Picks <span aria-hidden="true">→</span></a>
         </div>
       </section>
