@@ -26,6 +26,7 @@
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../">Leaderboard</a>
         <a href="./" aria-current="page">Picks</a>
+        <a href="../player/">History</a>
         <div class="account-menu">
           <span class="account-name" data-username>Player</span>
           <button class="sign-out-button" type="button" data-logout>Sign out</button>
@@ -51,7 +52,10 @@
             <p class="kicker">Upcoming slate</p>
             <h2 id="games-title">This week’s games</h2>
           </div>
-          <span class="record-label" data-game-count>Loading games…</span>
+          <div class="panel-actions">
+            <span class="pick-progress" data-game-count>Loading games…</span>
+            <span class="record-label" data-countdown hidden></span>
+          </div>
         </div>
 
         <div class="loading-state" data-loading>
@@ -77,7 +81,7 @@
 
       <aside class="notice" aria-label="Picks privacy note">
         <span class="notice-icon" aria-hidden="true">i</span>
-        <p>Your picks stay private until <strong data-reveal-time>10:00 AM Pacific on Sunday.</strong></p>
+        <p>Nobody else sees your picks until <strong data-reveal-time>Sunday at 10:00 AM Pacific</strong>. Games you skip default to the away team.</p>
       </aside>
     </main>
 

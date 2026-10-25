@@ -42,7 +42,7 @@ async function loadLeaderboard(weekId = null) {
     document.querySelector("[data-week-label]").textContent = `${data.week.label} · ${data.week.season}`;
     const visibility = document.querySelector("[data-pick-visibility]");
     visibility.textContent = data.picksRevealed
-      ? "All picks are visible"
+      ? (data.fromSplash ? "Imported from Splash Sports" : "All picks are visible")
       : `Other players’ picks unlock ${formatKickoff(data.week.revealAt)}`;
     board.innerHTML = leaderboardTable(data);
     board.hidden = false;
@@ -91,7 +91,7 @@ function renderSeasonStandings(rows) {
       <tbody>${rows.map((row) => `
         <tr class="${row.isCurrentUser ? "current-player" : ""}">
           <td>${row.rank}</td>
-          <th scope="row">${escapeHtml(row.username)}${row.isCurrentUser ? " <small>You</small>" : ""}</th>
+          <th scope="row">${playerName(row)}</th>
           <td><strong>${row.correct}</strong></td>
         </tr>`).join("")}</tbody>
     </table>`;
@@ -130,16 +130,24 @@ function gameHeader(game) {
 function playerRow(row, games, teamById) {
   return `<tr class="${row.isCurrentUser ? "current-player" : ""}">
     <td class="rank-column">${row.rank}</td>
-    <th class="player-column" scope="row">${escapeHtml(row.username)}${row.isCurrentUser ? " <small>You</small>" : ""}</th>
+    <th class="player-column" scope="row">${playerName(row)}</th>
     <td class="score-column">${row.score}</td>
     ${games.map((game) => pickCell(row.picks[game.id], teamById)).join("")}
   </tr>`;
 }
 
+function playerName(row) {
+  const tag = row.isCurrentUser
+    ? " <small>You</small>"
+    : row.joined ? "" : ' <small class="muted-tag">Not joined yet</small>';
+  return `<a class="player-link" href="player/?id=${row.id}">${escapeHtml(row.username)}</a>${tag}`;
+}
+
 function pickCell(pick, teamById) {
   if (!pick) return '<td class="pick-cell pick-hidden"><span>—</span></td>';
   const team = teamById.get(pick.teamId);
-  if (!team) return '<td class="pick-cell"><span>—</span></td>';
+  // A blank team id is a pick missed on Splash; it counts as a loss.
+  if (!team) return `<td class="pick-cell pick-${escapeHtml(pick.state)}"><div class="pick-pill"><strong>Missed</strong></div></td>`;
   const logo = logoUrl(team.abbreviation);
   return `<td class="pick-cell pick-${escapeHtml(pick.state)}">
     <div class="pick-pill">

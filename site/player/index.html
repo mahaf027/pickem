@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" class="auth-pending">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f0e6">
+    <meta name="description" content="Week-by-week pick history for Mahaffey Mutiny Pick'em.">
+    <title>History | Mahaffey Mutiny Pick'em</title>
+    <script>
+      if (!localStorage.getItem("pickem.session")) {
+        location.replace(new URL("../access/?next=" + encodeURIComponent("player/" + location.search), location.href));
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/player.js"></script>
+  </head>
+  <body data-root="../" data-protected>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Mahaffey Mutiny Pick'em home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Mahaffey Mutiny Pick'em</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../">Leaderboard</a>
+        <a href="../picks/">Picks</a>
+        <a href="./" data-history-link>History</a>
+        <div class="account-menu">
+          <span class="account-name" data-username>Player</span>
+          <button class="sign-out-button" type="button" data-logout>Sign out</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow" data-player-eyebrow>Pick history</p>
+          <h1 id="page-title" data-player-name>History</h1>
+        </div>
+        <div class="stat-chips" data-player-stats hidden></div>
+      </section>
+
+      <section class="scoreboard" aria-labelledby="weeks-title">
+        <div class="panel-heading">
+          <div>
+            <p class="kicker" data-season-label>Season</p>
+            <h2 id="weeks-title">Week by week</h2>
+          </div>
+          <span class="record-label">Tap a week to see every pick</span>
+        </div>
+
+        <div class="loading-state" data-loading>
+          <span class="loading-ball" aria-hidden="true"></span>
+          <p>Loading history…</p>
+        </div>
+
+        <div class="page-error" data-page-error hidden></div>
+
+        <div class="history-list" data-history hidden></div>
+
+        <div class="empty-state" data-empty hidden>
+          <h3>No weeks yet</h3>
+          <p>Once games have been played, each week’s results will show up here.</p>
+          <a class="text-link" href="../">View the leaderboard <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Mahaffey Mutiny Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
+      <p>Built for bragging rights.</p>
+    </footer>
+  </body>
+</html>

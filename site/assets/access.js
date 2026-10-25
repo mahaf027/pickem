@@ -10,6 +10,9 @@ const submitLabel = document.querySelector("[data-account-submit]");
 const poolError = document.querySelector("[data-pool-error]");
 const accountError = document.querySelector("[data-account-error]");
 const setupNotice = document.querySelector("[data-setup-notice]");
+const splashField = document.querySelector("[data-splash-field]");
+const splashSelect = splashField.querySelector("select");
+let splashNames = [];
 
 let poolToken = sessionStorage.getItem("pickem.poolToken");
 let mode = "login";
@@ -52,6 +55,8 @@ modeButtons.forEach((button) => {
     modeButtons.forEach((item) => item.setAttribute("aria-selected", String(item === button)));
     accountTitle.textContent = mode === "register" ? "Create your account" : "Welcome back";
     submitLabel.textContent = mode === "register" ? "Create account" : "Sign in";
+    accountForm.elements.password.autocomplete = mode === "register" ? "new-password" : "current-password";
+    splashField.hidden = mode !== "register" || !splashNames.length;
     accountError.hidden = true;
   });
 });
@@ -61,6 +66,7 @@ accountForm.addEventListener("submit", async (event) => {
   setBusy(accountForm, true);
   accountError.hidden = true;
   const values = Object.fromEntries(new FormData(accountForm));
+  if (mode !== "register" || !values.splashName) delete values.splashName;
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/${mode}`, {
       method: "POST",
@@ -90,6 +96,20 @@ function showAccountPanel() {
   poolForm.hidden = true;
   accountPanel.hidden = false;
   accountPanel.querySelector("input")?.focus();
+  loadSplashNames();
+}
+
+async function loadSplashNames() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/splash-names`, { headers: { "X-Pool-Token": poolToken } });
+    if (!response.ok) return;
+    splashNames = (await response.json()).names || [];
+    splashSelect.length = 1;
+    splashNames.forEach((name) => splashSelect.add(new Option(name, name)));
+    splashField.hidden = mode !== "register" || !splashNames.length;
+  } catch {
+    // Signing up still works without the Splash list.
+  }
 }
 
 function setBusy(form, busy) {
