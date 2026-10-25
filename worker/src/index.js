@@ -1,5 +1,7 @@
 import {
+  addCalendarDays,
   getPickWeekWindow,
+  getWeekWindowFromStart,
   isoDate,
   pacificParts,
   pickDeadline,
@@ -73,7 +75,7 @@ export default {
       }
 
       if (path === "/api/leaderboard" && request.method === "GET") {
-        return getLeaderboard(user, env, cors);
+        return getLeaderboard(user, env, cors, url.searchParams.get("weekId"));
       }
 
       return json({ error: "Not found" }, 404, cors);
@@ -199,10 +201,36 @@ async function savePick(gameId, user, request, env, cors) {
   return json({ ok: true, gameId: game.id, teamId: String(teamId) }, 200, cors);
 }
 
-async function getLeaderboard(user, env, cors) {
+async function getLeaderboard(user, env, cors, requestedWeekId = null) {
   await applyAutomaticPicks(env, new Date());
-  const week = await currentWeek(env);
-  if (!week) return json({ week: null, games: [], rows: [], picksRevealed: false }, 200, cors);
+  const { results: weeks } = await env.DB.prepare(
+    "SELECT * FROM weeks ORDER BY window_start DESC"
+  ).all();
+  const week = requestedWeekId
+    ? weeks.find((candidate) => String(candidate.id) === String(requestedWeekId))
+    : weeks[0];
+  if (requestedWeekId && !week) throw httpError(404, "Leaderboard week not found.");
+
+  const season = week?.season || new Date().getFullYear();
+  const { results: seasonAccounts } = await env.DB.prepare(
+    `SELECT u.id, u.username, COALESCE(scores.correct, 0) AS correct
+       FROM users u
+       LEFT JOIN (
+         SELECT p.user_id, COUNT(*) AS correct
+           FROM picks p
+           JOIN games g ON g.id = p.game_id
+           JOIN weeks w ON w.id = g.week_id
+          WHERE w.season = ? AND w.season_type = 2
+            AND g.completed = 1 AND g.winner_team_id = p.selected_team_id
+          GROUP BY p.user_id
+       ) scores ON scores.user_id = u.id
+      ORDER BY correct DESC, u.username COLLATE NOCASE`
+  ).bind(season).all();
+  const seasonRows = rankSeasonRows(seasonAccounts, user.id);
+
+  if (!week) {
+    return json({ week: null, weeks: [], games: [], rows: [], seasonRows, picksRevealed: false }, 200, cors);
+  }
 
   const { results: games } = await env.DB.prepare(
     `SELECT id, start_time, deadline, away_team_id, away_team_abbreviation, away_team_name,
@@ -259,8 +287,10 @@ async function getLeaderboard(user, env, cors) {
 
   return json({
     week: publicWeek(week),
+    weeks: weeks.map(publicWeek),
     games: games.map(publicGame),
     rows,
+    seasonRows,
     picksRevealed
   }, 200, cors);
 }
@@ -276,13 +306,18 @@ async function runMaintenance(env, now = new Date(), forceImport = false) {
   }
 
   const updatedGames = await syncResults(env, now);
+  const backfilledWeek = await backfillOneHistoricalWeek(env);
   const automaticPicks = await applyAutomaticPicks(env, now);
   await env.DB.prepare("DELETE FROM sessions WHERE expires_at <= ?").bind(now.toISOString()).run();
-  return { ok: true, imported, updatedGames, automaticPicks, ranAt: now.toISOString() };
+  return { ok: true, imported, backfilledWeek, updatedGames, automaticPicks, ranAt: now.toISOString() };
 }
 
 async function importSchedule(env, now) {
   const window = getPickWeekWindow(now);
+  return importScheduleWindow(env, window, true);
+}
+
+async function importScheduleWindow(env, window, markAsCurrent = false) {
   const data = await fetchScoreboard(window.espnDates);
   const events = data.events || [];
   if (!events.length) throw new Error(`No NFL games returned for ${window.startDate} through ${window.endDate}.`);
@@ -317,10 +352,28 @@ async function importSchedule(env, now) {
   const week = await env.DB.prepare("SELECT id FROM weeks WHERE window_start = ?").bind(window.startDate).first();
   const statements = events.map((event) => upsertGameStatement(env, week.id, event, window.revealAt));
   if (statements.length) await env.DB.batch(statements);
-  await env.DB.prepare(
-    `INSERT INTO system_state (key, value) VALUES ('last_schedule_window', ?)
-     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`
-  ).bind(window.startDate).run();
+  if (markAsCurrent) {
+    await env.DB.prepare(
+      `INSERT INTO system_state (key, value) VALUES ('last_schedule_window', ?)
+       ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`
+    ).bind(window.startDate).run();
+  }
+  return { weekNumber, windowStart: window.startDate, games: events.length };
+}
+
+async function backfillOneHistoricalWeek(env) {
+  const earliest = await env.DB.prepare(
+    `SELECT * FROM weeks WHERE season_type = 2 ORDER BY window_start ASC LIMIT 1`
+  ).first();
+  if (!earliest || Number(earliest.week_number) <= 1) return null;
+
+  const [year, month, day] = earliest.window_start.split("-").map(Number);
+  const previousStart = addCalendarDays({ year, month, day }, -7);
+  const result = await importScheduleWindow(env, getWeekWindowFromStart(previousStart));
+  if (Number(result.weekNumber) >= Number(earliest.week_number)) {
+    throw new Error(`Historical NFL data did not move backward from ${earliest.label}.`);
+  }
+  return result;
 }
 
 async function syncResults(env, now) {
@@ -575,6 +628,24 @@ function publicWeek(week) {
     windowEnd: week.window_end,
     revealAt: week.reveal_at
   };
+}
+
+function rankSeasonRows(accounts, currentUserId) {
+  let priorScore = null;
+  let priorRank = 0;
+  return accounts.map((account, index) => {
+    const correct = Number(account.correct || 0);
+    const rank = correct === priorScore ? priorRank : index + 1;
+    priorScore = correct;
+    priorRank = rank;
+    return {
+      id: account.id,
+      username: account.username,
+      correct,
+      rank,
+      isCurrentUser: account.id === currentUserId
+    };
+  });
 }
 
 function publicGame(game) {

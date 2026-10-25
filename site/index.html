@@ -46,10 +46,20 @@
       <section class="scoreboard" aria-labelledby="standings-title">
         <div class="panel-heading">
           <div>
-            <p class="kicker">This week</p>
+            <p class="kicker">Selected week</p>
             <h2 id="standings-title">Standings</h2>
           </div>
-          <span class="record-label" data-pick-visibility>Loading picks…</span>
+          <div class="panel-actions">
+            <span class="record-label" data-pick-visibility>Loading picks…</span>
+            <div class="week-controls" data-week-controls hidden>
+              <button type="button" data-week-direction data-older-week aria-label="Show older week">←</button>
+              <label>
+                <span class="sr-only">Leaderboard week</span>
+                <select data-week-select></select>
+              </label>
+              <button type="button" data-week-direction data-newer-week aria-label="Show newer week">→</button>
+            </div>
+          </div>
         </div>
 
         <div class="loading-state" data-loading>
@@ -71,6 +81,17 @@
           <p>No schedule has been imported yet. Once the next slate is available, everyone’s weekly record will show up here.</p>
           <a class="button" href="picks/">Head to Picks <span aria-hidden="true">→</span></a>
         </div>
+      </section>
+
+      <section class="season-board" aria-labelledby="season-title">
+        <div class="season-heading">
+          <div>
+            <p class="kicker" data-season-label>Regular season</p>
+            <h2 id="season-title">Season standings</h2>
+          </div>
+          <p>Total correct picks across every completed game.</p>
+        </div>
+        <div data-season-leaderboard hidden></div>
       </section>
 
       <section class="rule-strip" aria-label="Pick visibility rule">

@@ -57,14 +57,7 @@ export function compactDate(parts) {
   return isoDate(parts).replaceAll("-", "");
 }
 
-export function getPickWeekWindow(input) {
-  const now = input instanceof Date ? input : new Date(input);
-  const local = pacificParts(now);
-  const mondayAfterCutover = local.weekday === 1 && local.hour >= 21;
-  const daysSinceTuesday = (local.weekday + 5) % 7;
-  const start = mondayAfterCutover
-    ? addCalendarDays(local, 1)
-    : addCalendarDays(local, -daysSinceTuesday);
+export function getWeekWindowFromStart(start) {
   const end = addCalendarDays(start, 6);
   const sunday = addCalendarDays(start, 5);
   const revealAt = zonedTimeToUtc({ ...sunday, hour: 10 });
@@ -76,6 +69,17 @@ export function getPickWeekWindow(input) {
     espnDates: `${compactDate(start)}-${compactDate(end)}`,
     revealAt
   };
+}
+
+export function getPickWeekWindow(input) {
+  const now = input instanceof Date ? input : new Date(input);
+  const local = pacificParts(now);
+  const mondayAfterCutover = local.weekday === 1 && local.hour >= 21;
+  const daysSinceTuesday = (local.weekday + 5) % 7;
+  const start = mondayAfterCutover
+    ? addCalendarDays(local, 1)
+    : addCalendarDays(local, -daysSinceTuesday);
+  return getWeekWindowFromStart(start);
 }
 
 export function pickDeadline(startTime, revealAt) {

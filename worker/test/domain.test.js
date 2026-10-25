@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   canSubmitPick,
   getPickWeekWindow,
+  getWeekWindowFromStart,
   pickDeadline,
   pickState,
   shouldImportSchedule,
@@ -41,4 +42,12 @@ test("schedule import guard only opens after Monday 9 PM Pacific", () => {
   assert.equal(shouldImportSchedule("2026-09-15T03:59:00Z", "2026-09-08"), false);
   assert.equal(shouldImportSchedule("2026-09-15T04:01:00Z", "2026-09-08"), true);
   assert.equal(shouldImportSchedule("2026-09-15T04:01:00Z", "2026-09-15"), false);
+});
+
+test("historical week windows preserve Tuesday through Monday boundaries", () => {
+  const window = getWeekWindowFromStart({ year: 2026, month: 10, day: 13 });
+  assert.equal(window.startDate, "2026-10-13");
+  assert.equal(window.endDate, "2026-10-19");
+  assert.equal(window.espnDates, "20261013-20261019");
+  assert.equal(window.revealAt.toISOString(), "2026-10-18T17:00:00.000Z");
 });
