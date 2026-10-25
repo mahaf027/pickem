@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f0e6">
+    <meta name="description" content="Make weekly NFL picks with Sunday Pick'em.">
+    <title>Picks | Sunday Pick'em</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script src="../assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Sunday Pick'em home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Sunday Pick'em</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="../">Leaderboard</a>
+        <a href="./" aria-current="page">Picks</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Your card</p>
+          <h1 id="page-title">Picks</h1>
+          <p class="intro">Trust your gut. Lock in the winners.</p>
+        </div>
+        <div class="week-chip" aria-label="Picks status">
+          <span class="status-dot" aria-hidden="true"></span>
+          Not yet open
+        </div>
+      </section>
+
+      <section class="scoreboard picks-panel" aria-labelledby="games-title">
+        <div class="panel-heading">
+          <div>
+            <p class="kicker">Upcoming slate</p>
+            <h2 id="games-title">This week’s games</h2>
+          </div>
+          <span class="record-label">0 games</span>
+        </div>
+
+        <div class="empty-state">
+          <div class="empty-icon picks-icon" aria-hidden="true">
+            <span class="check-line check-line-one"></span>
+            <span class="check-line check-line-two"></span>
+            <span class="check-line check-line-three"></span>
+          </div>
+          <h3>No matchups on the board</h3>
+          <p>The weekly slate will appear here when games are ready for picking.</p>
+          <a class="text-link" href="../">View the leaderboard <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+
+      <aside class="notice" aria-label="Picks privacy note">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <p>Your picks stay private until <strong>10:00 AM Pacific on Sunday.</strong></p>
+      </aside>
+    </main>
+
+    <footer>
+      <p>Sunday Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
+      <p>Built for bragging rights.</p>
+    </footer>
+  </body>
+</html>

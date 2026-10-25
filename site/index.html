@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f0e6">
+    <meta name="description" content="See the weekly standings for Sunday Pick'em.">
+    <title>Leaderboard | Sunday Pick'em</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script src="assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Sunday Pick'em home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>Sunday Pick'em</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="./" aria-current="page">Leaderboard</a>
+        <a href="picks/">Picks</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Weekly standings</p>
+          <h1 id="page-title">Leaderboard</h1>
+          <p class="intro">Pick winners. Talk trash. Claim Sunday.</p>
+        </div>
+        <div class="week-chip" aria-label="Season status">
+          <span class="status-dot" aria-hidden="true"></span>
+          Season setup
+        </div>
+      </section>
+
+      <section class="scoreboard" aria-labelledby="standings-title">
+        <div class="panel-heading">
+          <div>
+            <p class="kicker">This week</p>
+            <h2 id="standings-title">Standings</h2>
+          </div>
+          <span class="record-label">Correct picks</span>
+        </div>
+
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <span class="yard-line yard-line-one"></span>
+            <span class="football"></span>
+            <span class="yard-line yard-line-two"></span>
+          </div>
+          <h3>The field is wide open</h3>
+          <p>No scores yet. Once the season begins, everyone’s weekly record will show up here.</p>
+          <a class="button" href="picks/">Head to Picks <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+
+      <section class="rule-strip" aria-label="Pick visibility rule">
+        <span class="rule-number">10</span>
+        <span class="rule-time">AM<br><small>Pacific</small></span>
+        <p>Everyone’s picks unlock together on Sunday morning.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Sunday Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
+      <p>Built for bragging rights.</p>
+    </footer>
+  </body>
+</html>
