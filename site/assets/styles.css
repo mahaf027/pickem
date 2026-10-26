@@ -556,6 +556,15 @@ h1 {
 
 .leaderboard-scoreboard { clear: both; }
 
+.leaderboard-heading {
+  align-items: flex-start;
+  padding: 48px 0 28px;
+}
+
+.leaderboard-heading > div:first-child { padding-top: 13px; }
+.leaderboard-heading h1 { font-size: clamp(2.9rem, 6vw, 4.8rem); }
+.leaderboard-heading .season-board { flex: 0 1 calc(50% - 12px); margin: 0; }
+
 /* Rules */
 .rules-card {
   padding: 12px 42px;
@@ -923,6 +932,9 @@ body > footer p { margin: 0; }
   body > footer { gap: 12px; flex-direction: column; }
   .error-card { margin: 16px; padding: 38px 24px; }
   .season-board { width: 100%; }
+  .leaderboard-heading { display: flex; align-items: stretch; flex-direction: column; }
+  .leaderboard-heading > div:first-child { padding-top: 0; }
+  .leaderboard-heading .season-board { flex-basis: auto; margin-top: 20px; }
   .season-heading { align-items: flex-start; flex-direction: column; padding: 18px 20px; }
   .season-table th, .season-table td { padding: 11px 18px; }
   .gate-shell { width: 100%; min-height: 100vh; margin: 0; border-radius: 0; }

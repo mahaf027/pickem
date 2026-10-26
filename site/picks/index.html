@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f0e6">
     <meta name="description" content="Make weekly NFL picks with Mahaffey Mutiny Pick'em.">
-    <title>Picks | Mahaffey Mutiny Pick'em</title>
+    <title>Your Picks | Mahaffey Mutiny Pick'em</title>
     <script>
       if (!localStorage.getItem("pickem.session")) {
         location.replace(new URL("../access/?next=picks%2F", location.href));
@@ -25,7 +25,7 @@
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="../">Leaderboard</a>
-        <a href="./" aria-current="page">Picks</a>
+        <a href="./" aria-current="page">Your Picks</a>
         <a href="../player/">History</a>
         <a href="../rules/">Rules</a>
         <div class="account-menu">
@@ -39,7 +39,7 @@
       <section class="page-heading" aria-labelledby="page-title">
         <div>
           <p class="eyebrow">Your card</p>
-          <h1 id="page-title">Picks</h1>
+          <h1 id="page-title">Your Picks</h1>
         </div>
         <div class="week-chip" aria-label="Picks status">
           <span class="status-dot" aria-hidden="true"></span>
@@ -88,7 +88,6 @@
 
     <footer>
       <p>Mahaffey Mutiny Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
-      <p>Built for bragging rights.</p>
     </footer>
   </body>
 </html>

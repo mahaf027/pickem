@@ -39,7 +39,6 @@ async function loadLeaderboard(weekId = null) {
       return;
     }
     renderWeekNavigation(data);
-    document.querySelector("[data-week-label]").textContent = `${data.week.label} · ${data.week.season}`;
     const visibility = document.querySelector("[data-pick-visibility]");
     visibility.textContent = data.picksRevealed
       ? (data.fromSplash ? "Imported from Splash Sports" : "All picks are visible")

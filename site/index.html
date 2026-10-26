@@ -25,7 +25,7 @@
       </a>
       <nav class="site-nav" aria-label="Main navigation">
         <a href="./" aria-current="page">Leaderboard</a>
-        <a href="picks/">Picks</a>
+        <a href="picks/">Your Picks</a>
         <a href="player/">History</a>
         <a href="rules/">Rules</a>
         <div class="account-menu">
@@ -36,25 +36,20 @@
     </header>
 
     <main>
-      <section class="page-heading" aria-labelledby="page-title">
+      <section class="page-heading leaderboard-heading" aria-labelledby="page-title">
         <div>
           <p class="eyebrow">Weekly standings</p>
           <h1 id="page-title">Leaderboard</h1>
         </div>
-        <div class="week-chip" aria-label="Season status">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span data-week-label>Loading week…</span>
-        </div>
-      </section>
-
-      <section class="season-board" aria-labelledby="season-title">
-        <div class="season-heading">
-          <div>
-            <p class="kicker" data-season-label>Regular season</p>
-            <h2 id="season-title">YTD standings</h2>
+        <section class="season-board" aria-labelledby="season-title">
+          <div class="season-heading">
+            <div>
+              <p class="kicker" data-season-label>Regular season</p>
+              <h2 id="season-title">YTD standings</h2>
+            </div>
           </div>
-        </div>
-        <div data-season-leaderboard hidden></div>
+          <div data-season-leaderboard hidden></div>
+        </section>
       </section>
 
       <section class="scoreboard leaderboard-scoreboard" aria-labelledby="standings-title">
@@ -93,7 +88,7 @@
           </div>
           <h3>The field is wide open</h3>
           <p>No schedule has been imported yet. Once the next slate is available, everyone’s weekly record will show up here.</p>
-          <a class="button" href="picks/">Head to Picks <span aria-hidden="true">→</span></a>
+          <a class="button" href="picks/">Head to Your Picks <span aria-hidden="true">→</span></a>
         </div>
       </section>
 
@@ -101,7 +96,6 @@
 
     <footer>
       <p>Mahaffey Mutiny Pick'em <span aria-hidden="true">·</span> <span data-year></span></p>
-      <p>Built for bragging rights.</p>
     </footer>
   </body>
 </html>

@@ -92,13 +92,13 @@ const LOGO_FILES = {
   ARI: "Arizona_Cardinals.png", ATL: "Atlanta_Falcons.png", BAL: "Baltimore_Ravens.png",
   BUF: "Buffalo_Bills.png", CAR: "Carolina_Panthers.png", CHI: "Chicago_Bears.png",
   CIN: "Cincinnati_Bengals.png", CLE: "Cleveland_Browns.png", DAL: "Dallas_Cowboys.png",
-  DEN: "Denver_Broncos.png", DET: "Detroit_Lions.png", GB: "Green_Bay_Packers.png",
+  DEN: "Denver_Broncos.png", DET: "Detroit_Lions.png", GB: "Green_Bay_Packers_transparent.png",
   HOU: "Houston_Texans.png", IND: "Indianapolis_Colts.png", JAX: "Jacksonville_Jaguars.png",
   KC: "Kansas_City_Chiefs.png", LV: "Las_Vegas_Raiders.png", LAC: "Los_Angeles_Chargers.png",
   LAR: "Los_Angeles_Rams.png", MIA: "Miami_Dolphins.png", MIN: "Minnesota_Vikings.png",
-  NE: "New_England_Patriots.png", NO: "New_Orleans_Saints.png", NYG: "New_York_Giants.png",
-  NYJ: "New_York_Jets.png", PHI: "Philadelphia_Eagles.png", PIT: "Pittsburgh_Steelers.png",
-  SEA: "Seattle_Seahawks.png", SF: "San_Francisco_49ers.png", TB: "Tampa_Bay_Buccaneers.png",
+  NE: "New_England_Patriots.png", NO: "New_Orleans_Saints_transparent.png", NYG: "New_York_Giants.png",
+  NYJ: "New_York_Jets.png", PHI: "Philadelphia_Eagles.png", PIT: "Pittsburgh_Steelers_transparent.png",
+  SEA: "Seattle_Seahawks.png", SF: "San_Francisco_49ers.png", TB: "Tampa_Bay_Buccaneers_transparent.png",
   TEN: "Tennessee_Titans.png", WSH: "Washington_Commanders.png", W: "Washington_Commanders.png"
 };
 
