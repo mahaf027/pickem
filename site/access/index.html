@@ -53,6 +53,13 @@
             <label for="password">Password</label>
             <input id="password" name="password" type="password" required minlength="4" maxlength="72" autocomplete="current-password">
             <small class="password-note">Use a password you do not use for any other account.</small>
+            <div class="splash-field" data-splash-field hidden>
+              <label for="splash-name">Played on Splash Sports?</label>
+              <select id="splash-name" name="splashName">
+                <option value="">No, I’m new to the pool</option>
+              </select>
+              <small class="password-note">Pick your Splash name to bring your past weeks with you.</small>
+            </div>
             <p class="form-error" data-account-error hidden></p>
             <button class="button" type="submit"><span data-account-submit>Sign in</span> <span aria-hidden="true">→</span></button>
           </form>

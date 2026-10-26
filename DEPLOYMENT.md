@@ -90,6 +90,45 @@ curl -X POST "https://YOUR-WORKER-URL/api/admin/sync" \
   -H "X-Admin-Token: YOUR_ADMIN_TOKEN"
 ```
 
+## Splash Sports history
+
+Earlier weeks played on Splash Sports are imported as **unclaimed players**. They appear on the leaderboard as "Not joined yet" and cannot sign in. When someone creates an account, they can pick their Splash name from the signup form, and their imported history moves with them automatically.
+
+Apply the migration once (after pulling this change):
+
+```sh
+cd worker
+npx wrangler@latest d1 migrations apply mahaffey-pickem --remote
+npx wrangler@latest deploy
+```
+
+Import the history file (safe to re-run; picks made on the site are never overwritten):
+
+```sh
+curl -X POST "https://YOUR-WORKER-URL/api/admin/import-splash" \
+  -H "X-Admin-Token: YOUR_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data @data/splash-2026.json
+```
+
+The file format is `{"season": 2026, "weeks": [{"week": 1, "picks": {"Splash name": ["KC", "BUF", ...]}}]}`, with one winner per game; a trailing `*` (e.g. `"NE*"`) marks a Splash auto-pick. Any game a listed player has no pick for is stored as a missed pick (a loss), matching Splash. The response lists any picks that could not be matched to a game.
+
+Link an account that existed before the import to its Splash name:
+
+```sh
+curl -X POST "https://YOUR-WORKER-URL/api/admin/link" \
+  -H "X-Admin-Token: YOUR_ADMIN_TOKEN" \
+  -d '{"username": "theo", "splashName": "TheoM"}'
+```
+
+Undo a wrong claim (the Splash name becomes claimable again and that login stops working):
+
+```sh
+curl -X POST "https://YOUR-WORKER-URL/api/admin/unclaim" \
+  -H "X-Admin-Token: YOUR_ADMIN_TOKEN" \
+  -d '{"splashName": "TheoM"}'
+```
+
 ## Update schedule
 
 The Worker wakes every ten minutes but avoids unnecessary NFL requests:

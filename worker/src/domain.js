@@ -98,6 +98,17 @@ export function canSubmitPick(now, startTime, revealAt) {
   return new Date(now) < pickDeadline(startTime, revealAt);
 }
 
+// Splash Sports and other sources disagree with ESPN on a few abbreviations.
+const TEAM_ALIASES = {
+  WAS: "WSH", JAC: "JAX", LA: "LAR", LVR: "LV", OAK: "LV", SD: "LAC", STL: "LAR",
+  GNB: "GB", KAN: "KC", NWE: "NE", NOR: "NO", SFO: "SF", TAM: "TB", ARZ: "ARI"
+};
+
+export function normalizeTeamAbbreviation(value) {
+  const cleaned = String(value || "").trim().toUpperCase();
+  return TEAM_ALIASES[cleaned] || cleaned;
+}
+
 export function shouldImportSchedule(now, lastImportedStartDate) {
   const local = pacificParts(now);
   if (local.weekday !== 1 || local.hour < 21) return false;

@@ -4,6 +4,7 @@ import {
   canSubmitPick,
   getPickWeekWindow,
   getWeekWindowFromStart,
+  normalizeTeamAbbreviation,
   pickDeadline,
   pickState,
   shouldImportSchedule,
@@ -50,4 +51,12 @@ test("historical week windows preserve Tuesday through Monday boundaries", () =>
   assert.equal(window.endDate, "2026-10-19");
   assert.equal(window.espnDates, "20261013-20261019");
   assert.equal(window.revealAt.toISOString(), "2026-10-18T17:00:00.000Z");
+});
+
+test("Splash team abbreviations normalize to ESPN abbreviations", () => {
+  assert.equal(normalizeTeamAbbreviation(" was "), "WSH");
+  assert.equal(normalizeTeamAbbreviation("JAC"), "JAX");
+  assert.equal(normalizeTeamAbbreviation("LA"), "LAR");
+  assert.equal(normalizeTeamAbbreviation("kc"), "KC");
+  assert.equal(normalizeTeamAbbreviation("WSH"), "WSH");
 });

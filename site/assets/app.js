@@ -73,7 +73,8 @@ export async function requireSession() {
 
 export function redirectToAccess() {
   const root = document.body.dataset.root || "./";
-  const current = location.pathname.endsWith("/picks/") ? "picks/" : "";
+  const page = location.pathname.match(/\/(picks|player)\/$/)?.[1];
+  const current = page ? `${page}/${location.search}` : "";
   location.replace(`${root}access/?next=${encodeURIComponent(current)}`);
 }
 

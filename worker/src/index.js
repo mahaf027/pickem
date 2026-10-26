@@ -3,6 +3,7 @@ import {
   getPickWeekWindow,
   getWeekWindowFromStart,
   isoDate,
+  normalizeTeamAbbreviation,
   pacificParts,
   pickDeadline,
   pickState,
@@ -30,21 +31,32 @@ export default {
       }
 
       if (path === "/api/pool/unlock" && request.method === "POST") {
-        return unlockPool(request, env, cors);
+        return await unlockPool(request, env, cors);
       }
 
       if (path === "/api/auth/register" && request.method === "POST") {
-        return register(request, env, cors);
+        return await register(request, env, cors);
       }
 
       if (path === "/api/auth/login" && request.method === "POST") {
-        return login(request, env, cors);
+        return await login(request, env, cors);
+      }
+
+      if (path === "/api/splash-names" && request.method === "GET") {
+        await requirePoolToken(request, env);
+        const { results } = await env.DB.prepare(
+          `SELECT splash_name FROM users
+            WHERE splash_name IS NOT NULL AND claimed_at IS NULL
+            ORDER BY splash_name COLLATE NOCASE`
+        ).all();
+        return json({ names: results.map((row) => row.splash_name) }, 200, cors);
       }
 
       if (path === "/api/admin/passwords" && request.method === "GET") {
         requireAdmin(request, env);
         const { results } = await env.DB.prepare(
-          "SELECT username, password_plain AS password, created_at FROM users ORDER BY username COLLATE NOCASE"
+          `SELECT username, password_plain AS password, splash_name, created_at
+             FROM users WHERE claimed_at IS NOT NULL ORDER BY username COLLATE NOCASE`
         ).all();
         return json({ accounts: results }, 200, cors);
       }
@@ -53,6 +65,21 @@ export default {
         requireAdmin(request, env);
         const result = await runMaintenance(env, new Date(), true);
         return json(result, 200, cors);
+      }
+
+      if (path === "/api/admin/import-splash" && request.method === "POST") {
+        requireAdmin(request, env);
+        return json(await importSplash(await readJson(request), env), 200, cors);
+      }
+
+      if (path === "/api/admin/link" && request.method === "POST") {
+        requireAdmin(request, env);
+        return json(await linkSplashName(await readJson(request), env), 200, cors);
+      }
+
+      if (path === "/api/admin/unclaim" && request.method === "POST") {
+        requireAdmin(request, env);
+        return json(await unclaimSplashName(await readJson(request), env), 200, cors);
       }
 
       const user = await authenticate(request, env);
@@ -67,15 +94,19 @@ export default {
       }
 
       if (path === "/api/picks" && request.method === "GET") {
-        return getPicks(user, env, cors);
+        return await getPicks(user, env, cors);
       }
 
       if (path.startsWith("/api/picks/") && request.method === "PUT") {
-        return savePick(path.slice("/api/picks/".length), user, request, env, cors);
+        return await savePick(path.slice("/api/picks/".length), user, request, env, cors);
       }
 
       if (path === "/api/leaderboard" && request.method === "GET") {
-        return getLeaderboard(user, env, cors, url.searchParams.get("weekId"));
+        return await getLeaderboard(user, env, cors, url.searchParams.get("weekId"));
+      }
+
+      if (path.startsWith("/api/players/") && request.method === "GET") {
+        return await getPlayerHistory(path.slice("/api/players/".length), user, env, cors);
       }
 
       return json({ error: "Not found" }, 404, cors);
@@ -113,15 +144,27 @@ async function unlockPool(request, env, cors) {
 
 async function register(request, env, cors) {
   await requirePoolToken(request, env);
-  const { username, password } = await readJson(request);
+  const { username, password, splashName } = await readJson(request);
   validateCredentials(username, password);
 
   try {
-    const result = await env.DB.prepare(
-      "INSERT INTO users (username, password_plain) VALUES (?, ?)"
-    ).bind(username.trim(), password).run();
-    const user = await env.DB.prepare("SELECT id, username, created_at FROM users WHERE id = ?")
-      .bind(result.meta.last_row_id).first();
+    let userId;
+    if (splashName) {
+      // Claiming a Splash name turns the imported placeholder row into this account.
+      const claimed = await env.DB.prepare(
+        `UPDATE users SET username = ?, password_plain = ?, claimed_at = CURRENT_TIMESTAMP
+          WHERE splash_name = ? AND claimed_at IS NULL RETURNING id`
+      ).bind(username.trim(), password, String(splashName).trim()).first();
+      if (!claimed) throw httpError(409, "That Splash name has already been claimed. Ask the pool organizer for help.");
+      userId = claimed.id;
+    } else {
+      const result = await env.DB.prepare(
+        "INSERT INTO users (username, password_plain, claimed_at) VALUES (?, ?, CURRENT_TIMESTAMP)"
+      ).bind(username.trim(), password).run();
+      userId = result.meta.last_row_id;
+    }
+    const user = await env.DB.prepare("SELECT id, username, splash_name, created_at FROM users WHERE id = ?")
+      .bind(userId).first();
     const session = await createSession(user.id, env);
     await applyAutomaticPicks(env, new Date(), user.id);
     return json({ user: publicUser(user), ...session }, 201, cors);
@@ -137,9 +180,10 @@ async function login(request, env, cors) {
   await requirePoolToken(request, env);
   const { username, password } = await readJson(request);
   const user = await env.DB.prepare(
-    "SELECT id, username, password_plain, created_at FROM users WHERE username = ? COLLATE NOCASE"
+    `SELECT id, username, password_plain, splash_name, created_at FROM users
+      WHERE username = ? COLLATE NOCASE AND claimed_at IS NOT NULL`
   ).bind(String(username || "").trim()).first();
-  if (!user || user.password_plain !== password) {
+  if (!user || !user.password_plain || user.password_plain !== password) {
     throw httpError(401, "Username or password is incorrect.");
   }
   const session = await createSession(user.id, env);
@@ -206,14 +250,12 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
   const { results: weeks } = await env.DB.prepare(
     "SELECT * FROM weeks ORDER BY window_start DESC"
   ).all();
-  const week = requestedWeekId
-    ? weeks.find((candidate) => String(candidate.id) === String(requestedWeekId))
-    : weeks[0];
-  if (requestedWeekId && !week) throw httpError(404, "Leaderboard week not found.");
+  // Unknown week ids (stale links) fall back to the latest week.
+  const week = weeks.find((candidate) => String(candidate.id) === String(requestedWeekId)) || weeks[0];
 
   const season = week?.season || new Date().getFullYear();
   const { results: seasonAccounts } = await env.DB.prepare(
-    `SELECT u.id, u.username, COALESCE(scores.correct, 0) AS correct
+    `SELECT u.id, u.username, u.claimed_at, u.splash_name, COALESCE(scores.correct, 0) AS correct
        FROM users u
        LEFT JOIN (
          SELECT p.user_id, COUNT(*) AS correct
@@ -240,10 +282,10 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
   ).bind(week.id).all();
   const picksRevealed = new Date() >= new Date(week.reveal_at);
   const { results: accounts } = await env.DB.prepare(
-    "SELECT id, username FROM users ORDER BY username COLLATE NOCASE"
+    "SELECT id, username, claimed_at, splash_name FROM users ORDER BY username COLLATE NOCASE"
   ).all();
   const { results: allPicks } = await env.DB.prepare(
-    `SELECT p.user_id, p.game_id, p.selected_team_id, p.is_auto
+    `SELECT p.user_id, p.game_id, p.selected_team_id, p.is_auto, p.source
        FROM picks p JOIN games g ON g.id = p.game_id WHERE g.week_id = ?`
   ).bind(week.id).all();
 
@@ -273,7 +315,14 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
         state
       };
     }
-    return { id: account.id, username: account.username, score, isCurrentUser: account.id === user.id, picks };
+    return {
+      id: account.id,
+      username: account.username,
+      joined: Boolean(account.claimed_at),
+      score,
+      isCurrentUser: account.id === user.id,
+      picks
+    };
   });
 
   rows.sort((a, b) => b.score - a.score || a.username.localeCompare(b.username));
@@ -291,8 +340,224 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
     games: games.map(publicGame),
     rows,
     seasonRows,
-    picksRevealed
+    picksRevealed,
+    fromSplash: allPicks.some((pick) => pick.source === "splash")
   }, 200, cors);
+}
+
+async function getPlayerHistory(playerId, user, env, cors) {
+  await applyAutomaticPicks(env, new Date());
+  const player = await env.DB.prepare(
+    "SELECT id, username, claimed_at, splash_name FROM users WHERE id = ?"
+  ).bind(playerId).first();
+  if (!player) throw httpError(404, "Player not found.");
+
+  const latest = await currentWeek(env);
+  const season = latest?.season || new Date().getFullYear();
+  const { results: weeks } = await env.DB.prepare(
+    "SELECT * FROM weeks WHERE season = ? ORDER BY window_start DESC"
+  ).bind(season).all();
+  const { results: games } = await env.DB.prepare(
+    `SELECT g.id, g.week_id, g.start_time, g.deadline, g.away_team_id, g.away_team_abbreviation,
+            g.away_team_name, g.home_team_id, g.home_team_abbreviation, g.home_team_name,
+            g.away_score, g.home_score, g.status, g.completed, g.winner_team_id
+       FROM games g JOIN weeks w ON w.id = g.week_id
+      WHERE w.season = ? ORDER BY g.start_time, g.id`
+  ).bind(season).all();
+  const { results: picks } = await env.DB.prepare(
+    `SELECT p.game_id, p.selected_team_id, p.is_auto, p.source
+       FROM picks p JOIN games g ON g.id = p.game_id JOIN weeks w ON w.id = g.week_id
+      WHERE p.user_id = ? AND w.season = ?`
+  ).bind(player.id, season).all();
+  // Correct picks for every player in every week, used for weekly ranks.
+  const { results: weekScores } = await env.DB.prepare(
+    `SELECT g.week_id, p.user_id,
+            SUM(CASE WHEN g.completed = 1 AND g.winner_team_id = p.selected_team_id THEN 1 ELSE 0 END) AS correct
+       FROM picks p JOIN games g ON g.id = p.game_id JOIN weeks w ON w.id = g.week_id
+      WHERE w.season = ?
+      GROUP BY g.week_id, p.user_id`
+  ).bind(season).all();
+
+  const now = new Date();
+  const isSelf = player.id === user.id;
+  const pickByGame = new Map(picks.map((pick) => [pick.game_id, pick]));
+  const history = weeks.map((week) => {
+    const weekGames = games.filter((game) => game.week_id === week.id);
+    const revealed = now >= new Date(week.reveal_at);
+    const visible = revealed || isSelf;
+    const scores = weekScores.filter((row) => row.week_id === week.id).map((row) => Number(row.correct));
+    let correct = 0;
+    let decided = 0;
+    const gamePicks = weekGames.map((game) => {
+      const pick = pickByGame.get(game.id);
+      if (!pick || !visible) return { game: publicGame(game), pick: null };
+      const state = pickState({
+        selectedTeamId: pick.selected_team_id,
+        winnerTeamId: game.winner_team_id,
+        completed: Boolean(game.completed)
+      });
+      if (state === "win") correct += 1;
+      if (state !== "pending") decided += 1;
+      return {
+        game: publicGame(game),
+        pick: { teamId: pick.selected_team_id, automatic: Boolean(pick.is_auto), state }
+      };
+    });
+    return {
+      week: publicWeek(week),
+      revealed,
+      visible,
+      fromSplash: weekGames.some((game) => pickByGame.get(game.id)?.source === "splash"),
+      games: weekGames.length,
+      correct: visible ? correct : null,
+      decided: visible ? decided : null,
+      rank: revealed ? 1 + scores.filter((score) => score > correct).length : null,
+      players: scores.length,
+      picks: gamePicks
+    };
+  });
+
+  return json({
+    player: {
+      id: player.id,
+      username: player.username,
+      joined: Boolean(player.claimed_at),
+      splashName: player.splash_name,
+      isCurrentUser: isSelf
+    },
+    season,
+    seasonCorrect: history
+      .filter((entry) => entry.week.seasonType === 2 && entry.correct !== null)
+      .reduce((total, entry) => total + entry.correct, 0),
+    weeks: history
+  }, 200, cors);
+}
+
+async function importSplash(body, env) {
+  const season = Number(body?.season);
+  if (!Number.isInteger(season) || !Array.isArray(body?.weeks)) {
+    throw httpError(400, "Expected { season, weeks: [{ week, picks: { name: [teams] } }] }.");
+  }
+
+  const names = [...new Set(body.weeks.flatMap((week) => Object.keys(week.picks || {}))
+    .map((name) => String(name).trim()).filter(Boolean))];
+  const playerIds = new Map();
+  for (const name of names) playerIds.set(name, await ensureSplashPlayer(name, env));
+
+  const { results: games } = await env.DB.prepare(
+    `SELECT g.id, w.week_number, g.away_team_id, g.away_team_abbreviation, g.home_team_id, g.home_team_abbreviation
+       FROM games g JOIN weeks w ON w.id = g.week_id
+      WHERE w.season = ? AND w.season_type = 2`
+  ).bind(season).all();
+
+  const report = { players: names.length, picks: 0, missed: 0, unmatched: [], missingWeeks: [] };
+  const statements = [];
+  const upsert = `INSERT INTO picks (user_id, game_id, selected_team_id, is_auto, source)
+                  VALUES (?, ?, ?, ?, 'splash')
+                  ON CONFLICT(user_id, game_id) DO UPDATE SET
+                    selected_team_id = excluded.selected_team_id,
+                    is_auto = excluded.is_auto,
+                    source = 'splash',
+                    updated_at = CURRENT_TIMESTAMP
+                  WHERE picks.is_auto = 1 OR picks.source = 'splash'`;
+
+  for (const entry of body.weeks) {
+    const weekGames = games.filter((game) => game.week_number === Number(entry.week));
+    if (!weekGames.length) {
+      report.missingWeeks.push(entry.week);
+      continue;
+    }
+    for (const name of names) {
+      const chosen = new Map();
+      const automatic = new Set();
+      for (const raw of entry.picks?.[name] || []) {
+        // A trailing "*" marks a Splash auto-pick.
+        const team = normalizeTeamAbbreviation(String(raw).replace(/\*$/, ""));
+        const game = weekGames.find((candidate) =>
+          [candidate.away_team_abbreviation, candidate.home_team_abbreviation]
+            .map(normalizeTeamAbbreviation).includes(team));
+        if (!game || chosen.has(game.id)) {
+          report.unmatched.push({ week: entry.week, player: name, team: raw });
+          continue;
+        }
+        chosen.set(game.id, normalizeTeamAbbreviation(game.away_team_abbreviation) === team
+          ? game.away_team_id
+          : game.home_team_id);
+        if (String(raw).endsWith("*")) automatic.add(game.id);
+      }
+      for (const game of weekGames) {
+        // A game with no Splash pick is stored as a blank pick: it scores as a
+        // loss, matching Splash, instead of getting an automatic away pick.
+        const teamId = chosen.get(game.id) ?? "";
+        if (teamId) report.picks += 1;
+        else report.missed += 1;
+        statements.push(env.DB.prepare(upsert).bind(playerIds.get(name), game.id, teamId, automatic.has(game.id) ? 1 : 0));
+      }
+    }
+  }
+
+  for (let index = 0; index < statements.length; index += 100) {
+    await env.DB.batch(statements.slice(index, index + 100));
+  }
+  return report;
+}
+
+async function ensureSplashPlayer(name, env) {
+  const existing = await env.DB.prepare("SELECT id FROM users WHERE splash_name = ?").bind(name).first();
+  if (existing) return existing.id;
+  const taken = await env.DB.prepare("SELECT id FROM users WHERE username = ? COLLATE NOCASE").bind(name).first();
+  const result = await env.DB.prepare(
+    "INSERT INTO users (username, password_plain, splash_name) VALUES (?, '', ?)"
+  ).bind(taken ? `${name} (Splash)` : name, name).run();
+  return result.meta.last_row_id;
+}
+
+async function linkSplashName({ username, splashName } = {}, env) {
+  const account = await env.DB.prepare(
+    "SELECT id, splash_name FROM users WHERE username = ? COLLATE NOCASE AND claimed_at IS NOT NULL"
+  ).bind(String(username || "").trim()).first();
+  if (!account) throw httpError(404, "No account has that username.");
+  if (account.splash_name) throw httpError(409, `That account is already linked to ${account.splash_name}.`);
+  const placeholder = await env.DB.prepare(
+    "SELECT id FROM users WHERE splash_name = ? AND claimed_at IS NULL"
+  ).bind(String(splashName || "").trim()).first();
+  if (!placeholder) throw httpError(404, "No unclaimed Splash player has that name.");
+
+  // Splash picks replace the account's automatic picks; picks made on the site are kept.
+  await env.DB.batch([
+    env.DB.prepare(
+      `INSERT INTO picks (user_id, game_id, selected_team_id, is_auto, source)
+       SELECT ?, game_id, selected_team_id, is_auto, source FROM picks WHERE user_id = ?
+       ON CONFLICT(user_id, game_id) DO UPDATE SET
+         selected_team_id = excluded.selected_team_id,
+         is_auto = excluded.is_auto,
+         source = excluded.source,
+         updated_at = CURRENT_TIMESTAMP
+       WHERE picks.is_auto = 1 OR picks.source = 'splash'`
+    ).bind(account.id, placeholder.id),
+    env.DB.prepare("DELETE FROM picks WHERE user_id = ?").bind(placeholder.id),
+    env.DB.prepare("DELETE FROM users WHERE id = ?").bind(placeholder.id),
+    env.DB.prepare("UPDATE users SET splash_name = ? WHERE id = ?").bind(String(splashName).trim(), account.id)
+  ]);
+  return { ok: true, username: String(username).trim(), splashName: String(splashName).trim() };
+}
+
+async function unclaimSplashName({ splashName } = {}, env) {
+  const name = String(splashName || "").trim();
+  const account = await env.DB.prepare(
+    "SELECT id FROM users WHERE splash_name = ? AND claimed_at IS NOT NULL"
+  ).bind(name).first();
+  if (!account) throw httpError(404, "No claimed account has that Splash name.");
+  const taken = await env.DB.prepare(
+    "SELECT id FROM users WHERE username = ? COLLATE NOCASE AND id != ?"
+  ).bind(name, account.id).first();
+  await env.DB.batch([
+    env.DB.prepare(
+      "UPDATE users SET username = ?, password_plain = '', claimed_at = NULL WHERE id = ?"
+    ).bind(taken ? `${name} (Splash)` : name, account.id),
+    env.DB.prepare("DELETE FROM sessions WHERE user_id = ?").bind(account.id)
+  ]);
+  return { ok: true, splashName: name };
 }
 
 async function runMaintenance(env, now = new Date(), forceImport = false) {
@@ -538,9 +803,9 @@ async function authenticate(request, env) {
   const token = bearerToken(request);
   if (!token) throw httpError(401, "Sign in to continue.");
   const user = await env.DB.prepare(
-    `SELECT u.id, u.username, u.created_at
+    `SELECT u.id, u.username, u.splash_name, u.created_at
        FROM sessions s JOIN users u ON u.id = s.user_id
-      WHERE s.token = ? AND s.expires_at > ?`
+      WHERE s.token = ? AND s.expires_at > ? AND u.claimed_at IS NOT NULL`
   ).bind(token, new Date().toISOString()).first();
   if (!user) throw httpError(401, "Your session has expired. Sign in again.");
   return user;
@@ -614,7 +879,7 @@ function base64UrlDecode(value) {
 }
 
 function publicUser(user) {
-  return { id: user.id, username: user.username, createdAt: user.created_at };
+  return { id: user.id, username: user.username, splashName: user.splash_name || null, createdAt: user.created_at };
 }
 
 function publicWeek(week) {
@@ -641,6 +906,7 @@ function rankSeasonRows(accounts, currentUserId) {
     return {
       id: account.id,
       username: account.username,
+      joined: Boolean(account.claimed_at),
       correct,
       rank,
       isCurrentUser: account.id === currentUserId

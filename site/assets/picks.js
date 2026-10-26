@@ -8,6 +8,9 @@ import {
   wireLogout
 } from "./app.js";
 
+let games = [];
+let picks = {};
+
 initialize();
 
 async function initialize() {
@@ -28,7 +31,10 @@ async function loadPicks() {
       return;
     }
     document.querySelector("[data-week-label]").textContent = `${data.week.label} · ${data.week.season}`;
-    document.querySelector("[data-game-count]").textContent = `${data.games.length} games`;
+    games = data.games;
+    picks = data.picks;
+    renderProgress();
+    startCountdown();
     document.querySelector("[data-reveal-time]").textContent = formatKickoff(data.week.revealAt);
     list.innerHTML = data.games.map((game, index) => gameCard(game, data.picks[game.id], index)).join("");
     list.hidden = false;
@@ -89,7 +95,9 @@ async function saveSelection(event) {
       method: "PUT",
       body: JSON.stringify({ teamId: event.target.value })
     });
-    status.textContent = "Saved";
+    picks[card.dataset.gameId] = { teamId: event.target.value, automatic: false };
+    renderProgress();
+    status.textContent = "Saved ✓";
     status.className = "saved-label";
   } catch (error) {
     status.textContent = error.message;
@@ -97,4 +105,41 @@ async function saveSelection(event) {
   } finally {
     inputs.forEach((input) => { input.disabled = false; });
   }
+}
+
+function renderProgress() {
+  const made = games.filter((game) => picks[game.id] && !picks[game.id].automatic).length;
+  const label = document.querySelector("[data-game-count]");
+  const open = games.some((game) => new Date(game.deadline) > new Date());
+  label.textContent = open ? `${made} of ${games.length} picked` : "Week locked";
+  label.classList.toggle("complete", made === games.length);
+}
+
+function startCountdown() {
+  const target = document.querySelector("[data-countdown]");
+  const update = () => {
+    const now = Date.now();
+    const next = games
+      .map((game) => new Date(game.deadline).getTime())
+      .filter((deadline) => deadline > now)
+      .sort((a, b) => a - b)[0];
+    if (!next) {
+      target.textContent = "All games locked";
+    } else {
+      const open = games.filter((game) => new Date(game.deadline).getTime() === next).length;
+      target.textContent = `${open === 1 ? "Next game locks" : `${open} games lock`} in ${timeUntil(next - now)}`;
+    }
+    target.hidden = false;
+  };
+  update();
+  setInterval(update, 30000);
+}
+
+function timeUntil(ms) {
+  const minutes = Math.floor(ms / 60000);
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  if (days) return `${days}d ${hours}h`;
+  if (hours) return `${hours}h ${minutes % 60}m`;
+  return `${Math.max(1, minutes)}m`;
 }
