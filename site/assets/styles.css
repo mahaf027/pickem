@@ -348,39 +348,27 @@ h1 {
 }
 
 .gate-shell {
-  width: min(980px, calc(100% - 40px));
-  min-height: 620px;
+  width: min(560px, calc(100% - 40px));
+  min-height: 590px;
   margin: 40px auto;
-  display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
   overflow: hidden;
   border-radius: 5px;
   background: var(--panel);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25);
 }
 
-.gate-intro {
-  padding: 52px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #fff;
-  background:
-    linear-gradient(rgba(13, 52, 39, 0.84), rgba(13, 52, 39, 0.92)),
-    repeating-linear-gradient(90deg, transparent 0 72px, rgba(255, 255, 255, 0.1) 72px 74px),
-    var(--green-bright);
-}
-
-.brand-light { color: #fff; }
-.gate-intro h1 { max-width: 400px; font-size: clamp(4rem, 8vw, 6.5rem); }
-.gate-intro > div > p:last-child { max-width: 390px; color: rgba(255, 255, 255, 0.75); line-height: 1.65; }
-.gate-fineprint { margin: 0; color: rgba(255, 255, 255, 0.58); font-size: 0.72rem; }
-
 .gate-card {
-  padding: 70px 52px;
+  min-height: 590px;
+  padding: 58px 64px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.gate-brand {
+  margin-bottom: 44px;
+  align-self: center;
+  text-align: center;
 }
 
 .gate-card h2 {
@@ -408,6 +396,11 @@ h1 {
 .gate-card .button:disabled { opacity: 0.55; cursor: not-allowed; }
 .form-error { margin: 10px 0 0; color: #a62f20; font-size: 0.78rem; }
 .password-note { margin-top: 7px; color: var(--ink-soft); font-size: 0.66rem; }
+.account-password-note {
+  margin-bottom: 2px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
 
 .account-tabs {
   margin-bottom: 28px;
@@ -429,26 +422,35 @@ h1 {
 .account-tabs button[aria-selected="true"] { border-color: var(--orange); color: var(--ink); }
 
 /* Picks */
-.games-list { background: var(--paper); }
+.games-list {
+  padding: 5px;
+  background: var(--paper);
+}
 
 .game-card {
-  margin-bottom: 14px;
+  min-height: 36px;
+  margin-bottom: 3px;
+  display: grid;
+  grid-template-columns: minmax(165px, 0.8fr) minmax(350px, 2.4fr) minmax(100px, 0.55fr);
+  align-items: stretch;
   border: 1px solid var(--line);
   background: var(--panel);
 }
 
+.game-card:last-child { margin-bottom: 0; }
+
 .game-meta,
 .game-footer {
-  min-height: 42px;
-  padding: 9px 16px;
+  min-height: 34px;
+  padding: 3px 9px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   color: var(--ink-soft);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
 }
 
-.game-meta { border-bottom: 1px solid var(--line); }
+.game-meta { border-right: 1px solid var(--line); }
 .game-meta > span:first-child { color: var(--orange); font-weight: 700; text-transform: uppercase; }
 .locked-badge, .auto-badge { margin-left: auto; font-weight: 700; text-transform: uppercase; }
 .team-options { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; }
@@ -456,29 +458,39 @@ h1 {
 .team-option { min-width: 0; cursor: pointer; }
 .team-option input { position: absolute; opacity: 0; pointer-events: none; }
 .team-choice {
-  min-height: 122px;
-  margin: 12px;
-  padding: 16px;
+  min-height: 30px;
+  height: calc(100% - 4px);
+  margin: 2px 4px;
+  padding: 2px 8px;
   display: grid;
-  grid-template-columns: 42px 1fr;
-  grid-template-rows: auto auto auto;
+  grid-template-columns: 24px 30px minmax(0, 1fr);
+  grid-template-rows: 1fr;
   align-content: center;
-  column-gap: 14px;
+  align-items: center;
+  column-gap: 7px;
   border: 2px solid transparent;
   border-radius: 4px;
   background: #f7f5ee;
   transition: border-color 120ms ease, background 120ms ease;
 }
-.team-choice img { width: 42px; height: 42px; grid-row: 1 / 4; align-self: center; object-fit: contain; }
-.team-choice small { color: var(--ink-soft); font-size: 0.62rem; text-transform: uppercase; }
-.team-choice strong { font: 600 1.35rem "Oswald", sans-serif; }
-.team-choice > span { overflow: hidden; color: var(--ink-soft); font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; }
+.team-choice img { width: 20px; height: 20px; object-fit: contain; }
+.team-choice small { color: var(--ink-soft); font-size: 0.5rem; text-transform: uppercase; }
+.team-choice strong { font: 600 0.95rem "Oswald", sans-serif; }
+.team-choice > span { overflow: hidden; color: var(--ink-soft); font-size: 0.62rem; text-overflow: ellipsis; white-space: nowrap; }
 .team-option input:checked + .team-choice { border-color: var(--green); background: #e9f3ec; }
 .team-option input:focus-visible + .team-choice { outline: 3px solid rgba(47, 122, 89, 0.3); }
 .team-option input:disabled + .team-choice { cursor: not-allowed; opacity: 0.72; }
-.game-footer { justify-content: space-between; border-top: 1px solid var(--line); }
+.game-footer { justify-content: space-between; border-left: 1px solid var(--line); }
 .saved-label { color: var(--green-bright); font-weight: 700; }
 .save-error { color: #a62f20; }
+
+.picks-page .page-heading { padding: 18px 0 12px; }
+.picks-page .page-heading .eyebrow { display: none; }
+.picks-page .page-heading h1 { margin: 0; font-size: clamp(2.8rem, 7vw, 4.5rem); }
+.picks-page .panel-heading { min-height: 62px; padding: 10px 20px; }
+.picks-page .panel-heading h2 { font-size: 1.4rem; }
+.picks-page .notice { margin-top: 10px; padding: 12px 20px; }
+.picks-page > footer { margin-top: 24px; padding-top: 18px; }
 
 /* Leaderboard */
 .leaderboard-wrap { overflow-x: auto; }
@@ -511,7 +523,8 @@ h1 {
 .current-player { background: #edfafa; box-shadow: inset 3px 0 #50d8d4; }
 
 .season-board {
-  margin-top: 24px;
+  width: calc(50% - 12px);
+  margin: 0 0 24px auto;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 3px;
@@ -520,8 +533,8 @@ h1 {
 }
 
 .season-heading {
-  min-height: 104px;
-  padding: 25px 30px;
+  min-height: 74px;
+  padding: 17px 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -530,16 +543,38 @@ h1 {
 }
 
 .season-heading .kicker { margin-bottom: 5px; }
-.season-heading h2 { margin: 0; font-size: 1.7rem; }
-.season-heading > p { max-width: 290px; margin: 0; color: var(--ink-soft); font-size: 0.78rem; line-height: 1.5; text-align: right; }
+.season-heading h2 { margin: 0; font-size: 1.35rem; }
 .season-table { width: 100%; border-collapse: collapse; }
-.season-table th, .season-table td { height: 64px; padding: 12px 30px; border-bottom: 1px solid #e7e3da; text-align: left; }
-.season-table thead th { height: 48px; color: var(--ink-soft); background: #f7f5ee; font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.season-table th, .season-table td { height: 46px; padding: 8px 18px; border-bottom: 1px solid #e7e3da; text-align: left; }
+.season-table thead th { height: 38px; color: var(--ink-soft); background: #f7f5ee; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; }
 .season-table th:last-child, .season-table td:last-child { text-align: right; }
-.season-table tbody td:first-child { width: 80px; font: 600 1rem "Oswald", sans-serif; }
+.season-table tbody td:first-child { width: 50px; font: 600 0.9rem "Oswald", sans-serif; }
 .season-table tbody th { font-size: 0.86rem; }
 .season-table tbody th small { margin-left: 7px; color: var(--orange); font-size: 0.58rem; text-transform: uppercase; }
-.season-table tbody td:last-child strong { font: 600 1.25rem "Oswald", sans-serif; }
+.season-table tbody td:last-child strong { font: 600 1.05rem "Oswald", sans-serif; }
+.leader-crown { width: 20px; height: 20px; margin: -3px 7px -4px 0; object-fit: contain; }
+
+.leaderboard-scoreboard { clear: both; }
+
+/* Rules */
+.rules-card {
+  padding: 12px 42px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--green);
+  border-radius: 3px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.rules-card ol { margin: 0; padding-left: 1.6rem; }
+.rules-card li {
+  padding: 26px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+.rules-card li:last-child { border-bottom: 0; }
+.rules-card li::marker { color: var(--orange); font: 700 1.15rem "Oswald", sans-serif; }
 
 .empty-icon {
   position: relative;
@@ -863,15 +898,16 @@ body > footer p { margin: 0; }
   .site-header { min-height: 74px; }
   .brand { font-size: 0.82rem; }
   .brand-mark { width: 30px; height: 21px; }
-  .site-nav { gap: 12px; }
-  .site-nav a { font-size: 0.78rem; }
+  .site-nav { gap: 9px; }
+  .site-nav a { font-size: 0.72rem; }
   .site-header {
     padding-top: 16px;
     flex-wrap: wrap;
   }
   .site-header .brand { width: 100%; justify-content: center; }
   .site-nav { width: 100%; min-height: 52px; justify-content: center; }
-  .account-name { max-width: 82px; }
+  .account-name { display: none; }
+  .sign-out-button { padding: 6px 7px; font-size: 0.68rem; }
   .page-heading { padding: 56px 0 30px; display: block; }
   .page-heading h1 { font-size: 3.8rem; }
   .week-chip { margin-top: 24px; }
@@ -886,16 +922,20 @@ body > footer p { margin: 0; }
   .rule-time { padding-right: 16px; }
   body > footer { gap: 12px; flex-direction: column; }
   .error-card { margin: 16px; padding: 38px 24px; }
-  .season-heading { align-items: flex-start; flex-direction: column; padding: 22px 20px; }
-  .season-heading > p { text-align: left; }
+  .season-board { width: 100%; }
+  .season-heading { align-items: flex-start; flex-direction: column; padding: 18px 20px; }
   .season-table th, .season-table td { padding: 11px 18px; }
-  .gate-shell { width: 100%; min-height: 100vh; margin: 0; grid-template-columns: 1fr; border-radius: 0; }
-  .gate-intro { min-height: 330px; padding: 34px 28px; }
-  .gate-intro h1 { margin-top: 50px; font-size: 3.8rem; }
+  .gate-shell { width: 100%; min-height: 100vh; margin: 0; border-radius: 0; }
   .gate-card { padding: 48px 28px; }
-  .team-choice { min-height: 112px; margin: 8px; padding: 12px 8px; grid-template-columns: 32px 1fr; column-gap: 8px; }
-  .team-choice img { width: 32px; height: 32px; }
+  .game-card { grid-template-columns: 1fr; }
+  .game-meta { min-height: 30px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .game-footer { min-height: 30px; border-top: 1px solid var(--line); border-left: 0; }
+  .team-choice { min-height: 48px; margin: 5px; padding: 6px 8px; grid-template-columns: 26px 32px 1fr; column-gap: 8px; }
+  .team-choice img { width: 26px; height: 26px; }
   .team-choice > span { display: none; }
+  .picks-page .page-heading { padding: 34px 0 22px; }
+  .rules-card { padding: 8px 20px; }
+  .rules-card li { padding: 20px 6px; font-size: 0.94rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

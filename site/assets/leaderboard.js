@@ -91,7 +91,7 @@ function renderSeasonStandings(rows) {
       <tbody>${rows.map((row) => `
         <tr class="${row.isCurrentUser ? "current-player" : ""}">
           <td>${row.rank}</td>
-          <th scope="row">${playerName(row)}</th>
+          <th scope="row">${row.rank === 1 ? '<img class="leader-crown" src="assets/images/crown.png" alt="Season leader">' : ""}${playerName(row)}</th>
           <td><strong>${row.correct}</strong></td>
         </tr>`).join("")}</tbody>
     </table>`;

@@ -14,20 +14,11 @@
   </head>
   <body class="gate-page" data-root="../">
     <main class="gate-shell">
-      <section class="gate-intro">
-        <a class="brand brand-light" href="../" aria-label="Mahaffey Mutiny Pick'em home">
+      <section class="gate-card" aria-live="polite">
+        <a class="brand gate-brand" href="../" aria-label="Mahaffey Mutiny Pick'em home">
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <span>Mahaffey Mutiny Pick'em</span>
         </a>
-        <div>
-          <p class="eyebrow">Private pool</p>
-          <h1>Call your shot.</h1>
-          <p>One winner every game. One leaderboard every week. Bragging rights all season.</p>
-        </div>
-        <p class="gate-fineprint">Picks lock at kickoff, with a final Sunday deadline at 10 AM Pacific.</p>
-      </section>
-
-      <section class="gate-card" aria-live="polite">
         <div class="setup-notice" data-setup-notice hidden></div>
 
         <form data-pool-form>
@@ -35,7 +26,7 @@
           <h2>Enter the pool</h2>
           <p class="form-copy">Use the case-sensitive password shared by the pool organizer.</p>
           <label for="pool-password">Pool password</label>
-          <input id="pool-password" name="poolPassword" type="password" required autocomplete="off" autofocus>
+          <input id="pool-password" name="poolPassword" type="text" required autocomplete="off" autofocus>
           <p class="form-error" data-pool-error hidden></p>
           <button class="button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </form>
@@ -52,7 +43,7 @@
             <input id="username" name="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]+" autocomplete="username">
             <label for="password">Password</label>
             <input id="password" name="password" type="password" required minlength="4" maxlength="72" autocomplete="current-password">
-            <small class="password-note">Use a password you do not use for any other account.</small>
+            <p class="password-note account-password-note">Theo can see the password you use, so don't use a real one. This just exists so that Ryan can't go in and change your picks.</p>
             <div class="splash-field" data-splash-field hidden>
               <label for="splash-name">Played on Splash Sports?</label>
               <select id="splash-name" name="splashName">

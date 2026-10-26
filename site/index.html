@@ -27,6 +27,7 @@
         <a href="./" aria-current="page">Leaderboard</a>
         <a href="picks/">Picks</a>
         <a href="player/">History</a>
+        <a href="rules/">Rules</a>
         <div class="account-menu">
           <span class="account-name" data-username>Player</span>
           <button class="sign-out-button" type="button" data-logout>Sign out</button>
@@ -46,7 +47,17 @@
         </div>
       </section>
 
-      <section class="scoreboard" aria-labelledby="standings-title">
+      <section class="season-board" aria-labelledby="season-title">
+        <div class="season-heading">
+          <div>
+            <p class="kicker" data-season-label>Regular season</p>
+            <h2 id="season-title">YTD standings</h2>
+          </div>
+        </div>
+        <div data-season-leaderboard hidden></div>
+      </section>
+
+      <section class="scoreboard leaderboard-scoreboard" aria-labelledby="standings-title">
         <div class="panel-heading">
           <div>
             <p class="kicker">Selected week</p>
@@ -86,22 +97,6 @@
         </div>
       </section>
 
-      <section class="season-board" aria-labelledby="season-title">
-        <div class="season-heading">
-          <div>
-            <p class="kicker" data-season-label>Regular season</p>
-            <h2 id="season-title">Season standings</h2>
-          </div>
-          <p>Total correct picks across every completed game.</p>
-        </div>
-        <div data-season-leaderboard hidden></div>
-      </section>
-
-      <section class="rule-strip" aria-label="Pick visibility rule">
-        <span class="rule-number">10</span>
-        <span class="rule-time">AM<br><small>Pacific</small></span>
-        <p>Everyone’s picks unlock together on Sunday morning.</p>
-      </section>
     </main>
 
     <footer>
