@@ -138,7 +138,7 @@ function playerRow(row, games, teamById) {
 function playerName(row) {
   const tag = row.isCurrentUser
     ? " <small>You</small>"
-    : row.joined ? "" : ' <small class="muted-tag">Not joined yet</small>';
+    : row.joined === false ? ' <small class="muted-tag">Not joined yet</small>' : "";
   return `<a class="player-link" href="player/?id=${row.id}">${escapeHtml(row.username)}</a>${tag}`;
 }
 
