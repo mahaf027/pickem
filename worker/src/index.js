@@ -2,6 +2,7 @@ import {
   addCalendarDays,
   getPickWeekWindow,
   getWeekWindowFromStart,
+  isPickVisible,
   isoDate,
   normalizeTeamAbbreviation,
   pacificParts,
@@ -177,7 +178,6 @@ async function register(request, env, cors) {
 }
 
 async function login(request, env, cors) {
-  await requirePoolToken(request, env);
   const { username, password } = await readJson(request);
   const user = await env.DB.prepare(
     `SELECT id, username, password_plain, splash_name, created_at FROM users
@@ -280,7 +280,8 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
             status, completed, winner_team_id
        FROM games WHERE week_id = ? ORDER BY start_time, id`
   ).bind(week.id).all();
-  const picksRevealed = new Date() >= new Date(week.reveal_at);
+  const now = new Date();
+  const picksRevealed = now >= new Date(week.reveal_at);
   const { results: accounts } = await env.DB.prepare(
     "SELECT id, username, claimed_at, splash_name FROM users ORDER BY username COLLATE NOCASE"
   ).all();
@@ -297,11 +298,11 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
 
   const rows = accounts.map((account) => {
     const userPicks = picksByUser.get(account.id) || new Map();
-    const visible = picksRevealed || account.id === user.id;
     let score = 0;
     const picks = {};
     for (const game of games) {
       const pick = userPicks.get(game.id);
+      const visible = isPickVisible(now, game.deadline, account.id === user.id);
       if (!pick || !visible) continue;
       const state = pickState({
         selectedTeamId: pick.selected_team_id,
@@ -384,13 +385,14 @@ async function getPlayerHistory(playerId, user, env, cors) {
   const history = weeks.map((week) => {
     const weekGames = games.filter((game) => game.week_id === week.id);
     const revealed = now >= new Date(week.reveal_at);
-    const visible = revealed || isSelf;
+    const visible = weekGames.some((game) => isPickVisible(now, game.deadline, isSelf));
     const scores = weekScores.filter((row) => row.week_id === week.id).map((row) => Number(row.correct));
     let correct = 0;
     let decided = 0;
     const gamePicks = weekGames.map((game) => {
       const pick = pickByGame.get(game.id);
-      if (!pick || !visible) return { game: publicGame(game), pick: null };
+      const gameVisible = isPickVisible(now, game.deadline, isSelf);
+      if (!pick || !gameVisible) return { game: publicGame(game), pick: null };
       const state = pickState({
         selectedTeamId: pick.selected_team_id,
         winnerTeamId: game.winner_team_id,
@@ -411,7 +413,7 @@ async function getPlayerHistory(playerId, user, env, cors) {
       games: weekGames.length,
       correct: visible ? correct : null,
       decided: visible ? decided : null,
-      rank: revealed ? 1 + scores.filter((score) => score > correct).length : null,
+      rank: visible ? 1 + scores.filter((score) => score > correct).length : null,
       players: scores.length,
       picks: gamePicks
     };

@@ -394,6 +394,17 @@ h1 {
 .gate-card input:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(47, 122, 89, 0.12); }
 .gate-card .button { margin-top: 24px; justify-content: center; cursor: pointer; }
 .gate-card .button:disabled { opacity: 0.55; cursor: not-allowed; }
+.gate-card [data-return-login] {
+  margin-top: 18px;
+  padding: 4px;
+  border: 0;
+  color: var(--green);
+  background: transparent;
+  font: 700 0.86rem "DM Sans", sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
 .form-error { margin: 10px 0 0; color: #a62f20; font-size: 0.78rem; }
 .password-note { margin-top: 7px; color: var(--ink-soft); font-size: 0.66rem; }
 .account-password-note {

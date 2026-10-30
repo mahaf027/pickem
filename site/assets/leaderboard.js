@@ -42,7 +42,7 @@ async function loadLeaderboard(weekId = null) {
     const visibility = document.querySelector("[data-pick-visibility]");
     visibility.textContent = data.picksRevealed
       ? (data.fromSplash ? "Imported from Splash Sports" : "All picks are visible")
-      : `Other players’ picks unlock ${formatKickoff(data.week.revealAt)}`;
+      : `Early-game picks reveal at kickoff; all others unlock ${formatKickoff(data.week.revealAt)}`;
     board.innerHTML = leaderboardTable(data);
     board.hidden = false;
     const url = new URL(location.href);

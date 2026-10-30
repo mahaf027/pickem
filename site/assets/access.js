@@ -6,6 +6,7 @@ const accountPanel = document.querySelector("[data-account-panel]");
 const accountForm = document.querySelector("[data-account-form]");
 const modeButtons = document.querySelectorAll("[data-mode]");
 const accountTitle = document.querySelector("[data-account-title]");
+const accountKicker = document.querySelector("[data-account-kicker]");
 const submitLabel = document.querySelector("[data-account-submit]");
 const poolError = document.querySelector("[data-pool-error]");
 const accountError = document.querySelector("[data-account-error]");
@@ -21,9 +22,10 @@ if (!apiConfigured()) {
   setupNotice.hidden = false;
   setupNotice.textContent = "Backend setup is not complete. The site owner needs to add the Worker URL in assets/config.js.";
   poolForm.querySelector("button").disabled = true;
+  accountForm.querySelector("button[type='submit']").disabled = true;
 }
 
-if (poolToken) showAccountPanel();
+showAccountPanel();
 
 poolForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -40,6 +42,7 @@ poolForm.addEventListener("submit", async (event) => {
     if (!response.ok) throw new Error(payload.error || "Could not enter the pool.");
     poolToken = payload.poolToken;
     sessionStorage.setItem("pickem.poolToken", poolToken);
+    setMode("register");
     showAccountPanel();
   } catch (error) {
     poolError.textContent = error.message;
@@ -51,14 +54,19 @@ poolForm.addEventListener("submit", async (event) => {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    mode = button.dataset.mode;
-    modeButtons.forEach((item) => item.setAttribute("aria-selected", String(item === button)));
-    accountTitle.textContent = mode === "register" ? "Create your account" : "Welcome back";
-    submitLabel.textContent = mode === "register" ? "Create account" : "Sign in";
-    accountForm.elements.password.autocomplete = mode === "register" ? "new-password" : "current-password";
-    splashField.hidden = mode !== "register" || !splashNames.length;
-    accountError.hidden = true;
+    if (button.dataset.mode === "register" && !poolToken) {
+      accountPanel.hidden = true;
+      poolForm.hidden = false;
+      poolForm.elements.poolPassword.focus();
+      return;
+    }
+    setMode(button.dataset.mode);
   });
+});
+
+document.querySelector("[data-return-login]").addEventListener("click", () => {
+  setMode("login");
+  showAccountPanel();
 });
 
 accountForm.addEventListener("submit", async (event) => {
@@ -68,9 +76,11 @@ accountForm.addEventListener("submit", async (event) => {
   const values = Object.fromEntries(new FormData(accountForm));
   if (mode !== "register" || !values.splashName) delete values.splashName;
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (mode === "register") headers["X-Pool-Token"] = poolToken;
     const response = await fetch(`${API_BASE_URL}/api/auth/${mode}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Pool-Token": poolToken },
+      headers,
       body: JSON.stringify(values)
     });
     const payload = await response.json();
@@ -79,7 +89,7 @@ accountForm.addEventListener("submit", async (event) => {
     const next = new URLSearchParams(location.search).get("next") || "";
     location.replace(`../${next}`);
   } catch (error) {
-    if (/pool access/i.test(error.message)) {
+    if (mode === "register" && /pool access/i.test(error.message)) {
       sessionStorage.removeItem("pickem.poolToken");
       poolToken = null;
       accountPanel.hidden = true;
@@ -96,7 +106,18 @@ function showAccountPanel() {
   poolForm.hidden = true;
   accountPanel.hidden = false;
   accountPanel.querySelector("input")?.focus();
-  loadSplashNames();
+  if (poolToken) loadSplashNames();
+}
+
+function setMode(nextMode) {
+  mode = nextMode;
+  modeButtons.forEach((item) => item.setAttribute("aria-selected", String(item.dataset.mode === mode)));
+  accountKicker.textContent = mode === "register" ? "Create an account · Step 2 of 2" : "Account access";
+  accountTitle.textContent = mode === "register" ? "Create your account" : "Welcome back";
+  submitLabel.textContent = mode === "register" ? "Create account" : "Sign in";
+  accountForm.elements.password.autocomplete = mode === "register" ? "new-password" : "current-password";
+  splashField.hidden = mode !== "register" || !splashNames.length;
+  accountError.hidden = true;
 }
 
 async function loadSplashNames() {

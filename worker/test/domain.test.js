@@ -4,6 +4,7 @@ import {
   canSubmitPick,
   getPickWeekWindow,
   getWeekWindowFromStart,
+  isPickVisible,
   normalizeTeamAbbreviation,
   pickDeadline,
   pickState,
@@ -30,6 +31,13 @@ test("a game kickoff can close before the Sunday deadline", () => {
   assert.equal(pickDeadline(thursday, reveal).toISOString(), thursday.toISOString());
   assert.equal(pickDeadline(sunday, reveal).toISOString(), reveal.toISOString());
   assert.equal(canSubmitPick("2026-09-18T00:16:00Z", thursday, reveal), false);
+});
+
+test("early-game picks become visible at their kickoff", () => {
+  const deadline = "2026-09-18T00:15:00Z";
+  assert.equal(isPickVisible("2026-09-18T00:14:59Z", deadline), false);
+  assert.equal(isPickVisible("2026-09-18T00:15:00Z", deadline), true);
+  assert.equal(isPickVisible("2026-09-18T00:14:59Z", deadline, true), true);
 });
 
 test("pick result states distinguish wins, losses, ties, and live games", () => {

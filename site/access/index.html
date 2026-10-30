@@ -21,18 +21,19 @@
         </a>
         <div class="setup-notice" data-setup-notice hidden></div>
 
-        <form data-pool-form>
-          <p class="kicker">Step 1 of 2</p>
-          <h2>Enter the pool</h2>
-          <p class="form-copy">Use the case-sensitive password shared by the pool organizer.</p>
+        <form data-pool-form hidden>
+          <p class="kicker">Create an account · Step 1 of 2</p>
+          <h2>Join the pool</h2>
+          <p class="form-copy">New accounts require the case-sensitive password shared by the pool organizer.</p>
           <label for="pool-password">Pool password</label>
           <input id="pool-password" name="poolPassword" type="text" required autocomplete="off" autofocus>
           <p class="form-error" data-pool-error hidden></p>
           <button class="button" type="submit">Continue <span aria-hidden="true">→</span></button>
+          <button class="text-link" type="button" data-return-login>Already registered? Sign in</button>
         </form>
 
         <div data-account-panel hidden>
-          <p class="kicker">Step 2 of 2</p>
+          <p class="kicker" data-account-kicker>Account access</p>
           <div class="account-tabs" role="tablist" aria-label="Account action">
             <button type="button" role="tab" data-mode="login" aria-selected="true">Sign in</button>
             <button type="button" role="tab" data-mode="register" aria-selected="false">Create account</button>

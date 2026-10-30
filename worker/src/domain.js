@@ -98,6 +98,10 @@ export function canSubmitPick(now, startTime, revealAt) {
   return new Date(now) < pickDeadline(startTime, revealAt);
 }
 
+export function isPickVisible(now, deadline, isOwner = false) {
+  return isOwner || new Date(now) >= new Date(deadline);
+}
+
 // Splash Sports and other sources disagree with ESPN on a few abbreviations.
 const TEAM_ALIASES = {
   WAS: "WSH", JAC: "JAX", LA: "LAR", LVR: "LV", OAK: "LV", SD: "LAC", STL: "LAR",

@@ -58,11 +58,11 @@ worker/
 
 ## Behavior
 
-- A correct pool password is required before registration or sign-in.
+- A correct pool password is required before registration; existing accounts sign in directly.
 - Usernames are unique without regard to case.
 - A pick locks at the earlier of its game kickoff or Sunday at 10:00 AM Pacific.
 - Missing locked picks are automatically assigned to the away team.
-- Other players' picks stay hidden until Sunday at 10:00 AM Pacific.
+- Picks for games before the Sunday deadline become visible at kickoff; all remaining picks become visible Sunday at 10:00 AM Pacific.
 - The next Tuesday–Monday slate imports after Monday at 9:00 PM Pacific.
 - Active games are checked every ten minutes until marked final.
 - The leaderboard awards one point for each correct completed-game pick.
