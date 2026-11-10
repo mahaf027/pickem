@@ -7,7 +7,7 @@ import {
   showPageError,
   wireLogout
 } from "./app.js";
-import { loadPoolHistory } from "./history.js";
+import { loadPoolHistory } from "./history.js?v=history-table-2";
 
 initialize();
 

@@ -1,5 +1,5 @@
 import { api, escapeHtml, showPageError } from "./app.js";
-import { buildTieTrails, fetchPoolHistory } from "./history-data.js";
+import { buildTieTrails, fetchPoolHistory } from "./history-data.js?v=history-table-2";
 
 export async function loadPoolHistory() {
   const loading = document.querySelector("[data-loading]");
