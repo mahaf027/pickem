@@ -63,11 +63,13 @@
         <div class="history-list" data-history hidden></div>
 
         <div class="history-key" data-history-key hidden>
-          <span><b class="result-badge result-won">★</b> Winner</span>
-          <span><b class="result-badge result-split">÷</b> Split win</span>
-          <span><b class="result-badge result-runoff">↗</b> Runoff pending</span>
-          <span><b class="result-badge result-tied">=</b> Tied first, eliminated in runoff</span>
-          <p>Numbers count correct picks. Live totals are provisional; — means no results yet. Select a marked score for tie details. Select a player to see their picks.</p>
+          <span><b class="result-badge result-won">★</b> Outright weekly winner</span>
+          <span><b class="result-badge trail-primary"></b> Primary tie trail</span>
+          <span><b class="result-badge trail-secondary"></b> Secondary tie trail</span>
+          <span><b class="result-badge trail-tertiary"></b> Tertiary tie trail</span>
+          <span><b class="result-badge">+</b> One per runoff trail won</span>
+          <span><b class="result-badge">÷</b> Split at Week 18</span>
+          <p>Numbers count correct picks. Trail colors follow the remaining tied players through each final week; overlapping trails share a cell’s fill. Green joins the fill for an outright weekly win. One trail may carry several weekly wins. Live totals are provisional; — means no results yet. Select a colored score for runoff details, or a player to see their picks.</p>
         </div>
 
         <div class="empty-state" data-empty hidden>
@@ -80,7 +82,7 @@
       <section class="runoff-section" aria-labelledby="runoffs-title" data-runoffs hidden>
         <p class="eyebrow">How the ties played out</p>
         <h2 id="runoffs-title">Weekly runoffs</h2>
-        <p>Only tied players compete for that week’s win. Runoffs continue each following week until one remains; ties left after Week 18 are split. Each week also has its own separate contest.</p>
+        <p>Runoffs continue among the remaining tied players until one wins; ties left after Week 18 are split. A new weekly tie among a trail’s remaining players adds that week’s win to the trail. Separate trails keep their own colors even if they later narrow to the same players.</p>
         <div data-runoff-list></div>
       </section>
     </main>

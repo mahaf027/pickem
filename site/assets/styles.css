@@ -880,10 +880,11 @@ body > footer p { margin: 0; }
 .history-table td a { color: inherit; text-underline-offset: 4px; }
 .history-table td strong { font: 600 1.15rem "Oswald", sans-serif; }
 .score-marker { font-size: 0.7rem; }
-.result-won { background: #dceedd; color: #174426; }
-.result-split { background: #f6e8b7; color: #654700; }
-.result-runoff { background: #e3edf9; color: #254c7f; }
-.result-tied { background: #f0e9df; color: #65533c; }
+.result-won { background: #b6d5a5; color: #174426; }
+.trail-primary { background: #ffe69b; }
+.trail-secondary { background: #f6bc8c; }
+.trail-tertiary { background: #c7a68a; }
+.trail-cell { color: var(--ink); }
 .history-key { display: flex; flex-wrap: wrap; gap: 12px 20px; padding: 20px 24px; color: var(--ink-soft); font-size: 0.75rem; }
 .history-key > span { display: inline-flex; align-items: center; gap: 7px; }
 .result-badge { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 5px; }

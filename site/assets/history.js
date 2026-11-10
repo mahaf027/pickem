@@ -1,5 +1,5 @@
 import { api, escapeHtml, showPageError } from "./app.js";
-import { fetchPoolHistory } from "./history-data.js";
+import { buildTieTrails, fetchPoolHistory } from "./history-data.js";
 
 export async function loadPoolHistory() {
   const loading = document.querySelector("[data-loading]");
@@ -19,16 +19,16 @@ export async function loadPoolHistory() {
     target.innerHTML = historyTable(data);
     target.hidden = false;
     document.querySelector("[data-history-key]").hidden = false;
-    const ties = data.weeks.filter((week) => week.result.leaders.length > 1);
-    document.querySelector("[data-runoff-list]").innerHTML = ties.map((week) => runoffCard(week, data.rows)).join("");
-    document.querySelector("[data-runoffs]").hidden = !ties.length;
+    document.querySelector("[data-runoff-list]").innerHTML = data.trails.map((trail) => runoffCard(trail, data.rows)).join("");
+    document.querySelector("[data-runoffs]").hidden = !data.trails.length;
   } catch (error) {
     loading.hidden = true;
     showPageError(error.message);
   }
 }
 
-export function historyTable({ season, weeks, rows }) {
+export function historyTable({ season, weeks, rows, trails, cells }) {
+  if (!trails || !cells) ({ trails, cells } = buildTieTrails(weeks, rows));
   return `<table class="history-table">
     <caption class="sr-only">${season} regular season correct picks for every pool member</caption>
     <thead><tr><th scope="col" class="history-player">Player</th>
@@ -36,34 +36,50 @@ export function historyTable({ season, weeks, rows }) {
     </tr></thead>
     <tbody>${rows.map((row) => `<tr class="${row.isCurrentUser ? "current-player" : ""}">
       <th scope="row" class="history-player"><a class="player-link" href="?id=${encodeURIComponent(row.id)}">${escapeHtml(row.username)}</a>${row.isCurrentUser ? '<small>You</small>' : !row.joined ? '<small>Not joined yet</small>' : ""}</th>
-      ${weeks.map((week, index) => scoreCell(row, week, index)).join("")}
+      ${weeks.map((week, index) => scoreCell(row, week, index, trails, cells[row.id][index])).join("")}
     </tr>`).join("")}</tbody>
   </table>`;
 }
 
-function scoreCell(row, week, index) {
-  const { result } = week;
-  const winner = result.winners.includes(row.id);
-  const tied = result.leaders.length > 1 && result.leaders.includes(row.id);
-  const awaitingRunoff = result.status === "runoff" && result.rounds.at(-1).contenders.includes(row.id);
-  const type = winner ? result.status : tied ? (awaitingRunoff ? "runoff" : "tied") : "";
-  const symbol = { won: "★", split: "÷", runoff: "↗", tied: "=" }[type];
-  const label = { won: "Winner", split: "Split win", runoff: "Runoff pending", tied: "Tied for first; runoff eliminated" }[type];
-  const score = row.scores[index] ?? "—";
-  const content = `<strong>${score}</strong>${symbol ? `<span class="score-marker" aria-hidden="true">${symbol}</span><span class="sr-only"> · ${label}</span>` : ""}`;
-  return `<td class="${type ? `result-${type}` : ""}">${tied ? `<a href="#runoff-${week.number}" aria-label="Week ${week.number}: ${score} correct picks. ${label}. View tiebreaker details">${content}</a>` : `<span class="history-score">${content}</span>`}</td>`;
+const TRAIL_COLORS = ["#ffe69b", "#f6bc8c", "#c7a68a"];
+const TRAIL_NAMES = ["Yellow", "Orange", "Brown"];
+const trailColor = (trail) => TRAIL_COLORS[trail.color] || `hsl(${(trail.color * 137.5) % 360} 45% 78%)`;
+const trailName = (trail) => TRAIL_NAMES[trail.color] || `Trail ${trail.color + 1}`;
+const weekNames = (trail) => `${trail.weeks.length > 1 ? "Weeks" : "Week"} ${trail.weeks.join(" + ")}`;
+
+export function cellBackground(colors) {
+  if (!colors.length) return "";
+  if (colors.length === 1) return colors[0];
+  return `linear-gradient(135deg, ${colors.map((color, index) => `${color} ${index * 100 / colors.length}% ${(index + 1) * 100 / colors.length}%`).join(", ")})`;
 }
 
-function runoffCard(week, rows) {
+function scoreCell(row, week, index, trails, cell) {
+  const memberships = cell.trailIds.map((id) => trails.find((trail) => trail.id === id));
+  const colors = [...(cell.outright ? ["#b6d5a5"] : []), ...memberships.map(trailColor)];
+  const symbols = `${cell.outright ? "★" : ""}${"+".repeat(cell.resolved.length)}${cell.split ? "÷" : ""}`;
+  const details = [
+    ...(cell.outright ? ["Outright weekly winner"] : []),
+    ...memberships.map((trail) => `${trailName(trail)} trail for ${weekNames(trail)}${cell.resolved.includes(trail.id) ? `: runoff won, ${trail.weeks.length} weekly ${trail.weeks.length === 1 ? "win" : "wins"}` : cell.split ? ": split at Week 18" : ": tied contender"}`)
+  ].join(". ");
+  const score = row.scores[index] ?? "—";
+  const content = `<strong>${score}</strong>${symbols ? `<span class="score-marker" aria-hidden="true">${symbols}</span>` : ""}`;
+  const label = escapeHtml(`Week ${week.number}: ${score} correct picks${details ? `. ${details}` : ""}`);
+  return `<td${colors.length ? ` class="trail-cell" style="background: ${cellBackground(colors)}"` : ""} title="${label}">${memberships.length
+    ? `<a href="#runoff-${memberships[0].id}" aria-label="${label}. View runoff details">${content}</a>`
+    : `<span class="history-score" aria-label="${label}">${content}</span>`}</td>`;
+}
+
+function runoffCard(trail, rows) {
   const names = (ids) => ids.map((id) => escapeHtml(rows.find((row) => row.id === id).username)).join(", ");
-  const result = week.result;
-  const outcome = result.status === "runoff" ? "Runoff pending" : result.status === "split" ? `Split win: ${names(result.winners)}` : `Winner: ${names(result.winners)}`;
-  return `<article class="runoff-card" id="runoff-${week.number}" tabindex="-1">
-    <div class="runoff-heading"><h3>Week ${week.number}</h3><span class="result-label result-${result.status}">${outcome}</span></div>
-    <p><strong>Tied for first:</strong> ${names(result.leaders)} · ${rows.find((row) => row.id === result.leaders[0]).scores[week.number - 1]} correct picks each.</p>
-    <ol>${result.rounds.map((round) => `<li><strong>Week ${round.number} runoff:</strong> ${round.scores
-      ? `${round.scores.map((entry) => `${names([entry.id])}: ${entry.score}`).join(" · ")}. ${round.contenders.length === 1 ? `${names(round.contenders)} wins.` : `Still tied: ${names(round.contenders)}.`}`
-      : `Awaiting final results for ${names(round.contenders)}.`}</li>`).join("")}</ol>
-    ${result.status === "split" ? '<p>The remaining tie is split at the end of Week 18.</p>' : ""}
+  const outcome = trail.status === "runoff" ? "Runoff pending" : trail.status === "split" ? `Split: ${names(trail.contenders)}` : `Winner: ${names(trail.contenders)} · Week ${trail.decidedWeek}`;
+  const nextWeek = (trail.rounds.at(-1)?.number ?? trail.weeks[0]) + 1;
+  return `<article class="runoff-card" id="runoff-${trail.id}" tabindex="-1" style="border-left: 6px solid ${trailColor(trail)}">
+    <div class="runoff-heading"><h3>${weekNames(trail)}</h3><span class="result-label" style="background: ${trailColor(trail)}">${outcome}</span></div>
+    <p><strong>${trailName(trail)} trail · ${trail.weeks.length} weekly ${trail.weeks.length === 1 ? "win" : "wins"} at stake.</strong> Original contenders: ${names(trail.leaders)}.</p>
+    <ol>${trail.rounds.map((round) => `<li><strong>Week ${round.number} runoff:</strong> ${round.scores.map((entry) => `${names([entry.id])}: ${entry.score}`).join(" · ")}. ${round.contenders.length === 1 ? `${names(round.contenders)} wins.` : `Still tied: ${names(round.contenders)}.`}</li>`).join("")}
+      ${trail.status === "runoff" ? `<li><strong>Week ${nextWeek} runoff:</strong> Awaiting final results for ${names(trail.contenders)}.</li>` : ""}
+    </ol>
+    ${trail.weeks.length > 1 ? `<p>The winner of this trail collects the weekly wins for ${weekNames(trail)}.</p>` : ""}
+    ${trail.status === "split" ? '<p>The remaining tie is split at the end of Week 18.</p>' : ""}
   </article>`;
 }
