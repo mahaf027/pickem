@@ -1,6 +1,5 @@
 import {
   api,
-  currentUser,
   escapeHtml,
   formatKickoff,
   logoUrl,
@@ -8,17 +7,21 @@ import {
   showPageError,
   wireLogout
 } from "./app.js";
+import { loadPoolHistory } from "./history.js";
 
 initialize();
 
 async function initialize() {
   if (!(await requireSession())) return;
   wireLogout();
-  const playerId = new URLSearchParams(location.search).get("id") || currentUser()?.id;
-  if (String(playerId) === String(currentUser()?.id)) {
-    document.querySelector("[data-history-link]").setAttribute("aria-current", "page");
+  const playerId = new URLSearchParams(location.search).get("id");
+  document.querySelector("[data-history-link]").setAttribute("aria-current", "page");
+  if (playerId) {
+    document.querySelector("[data-history-hint]").textContent = "Tap a week to see every pick";
+    loadHistory(playerId);
+  } else {
+    loadPoolHistory();
   }
-  loadHistory(playerId);
 }
 
 async function loadHistory(playerId) {

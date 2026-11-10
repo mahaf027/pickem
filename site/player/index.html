@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f0e6">
-    <meta name="description" content="Week-by-week pick history for Mahaffey Mutiny Pick'em.">
+    <meta name="description" content="Weekly win totals, pool winners, and tiebreaker runoffs for Mahaffey Mutiny Pick'em.">
     <title>History | Mahaffey Mutiny Pick'em</title>
     <script>
       if (!localStorage.getItem("pickem.session")) {
@@ -38,7 +38,7 @@
     <main>
       <section class="page-heading" aria-labelledby="page-title">
         <div>
-          <p class="eyebrow" data-player-eyebrow>Pick history</p>
+          <p class="eyebrow" data-player-eyebrow>The whole pool</p>
           <h1 id="page-title" data-player-name>History</h1>
         </div>
         <div class="stat-chips" data-player-stats hidden></div>
@@ -50,7 +50,7 @@
             <p class="kicker" data-season-label>Season</p>
             <h2 id="weeks-title">Week by week</h2>
           </div>
-          <span class="record-label">Tap a week to see every pick</span>
+          <span class="record-label" data-history-hint>Correct picks by week</span>
         </div>
 
         <div class="loading-state" data-loading>
@@ -62,11 +62,26 @@
 
         <div class="history-list" data-history hidden></div>
 
+        <div class="history-key" data-history-key hidden>
+          <span><b class="result-badge result-won">★</b> Winner</span>
+          <span><b class="result-badge result-split">÷</b> Split win</span>
+          <span><b class="result-badge result-runoff">↗</b> Runoff pending</span>
+          <span><b class="result-badge result-tied">=</b> Tied first, eliminated in runoff</span>
+          <p>Numbers count correct picks. Live totals are provisional; — means no results yet. Select a marked score for tie details. Select a player to see their picks.</p>
+        </div>
+
         <div class="empty-state" data-empty hidden>
           <h3>No weeks yet</h3>
           <p>Once games have been played, each week’s results will show up here.</p>
           <a class="text-link" href="../">View the leaderboard <span aria-hidden="true">→</span></a>
         </div>
+      </section>
+
+      <section class="runoff-section" aria-labelledby="runoffs-title" data-runoffs hidden>
+        <p class="eyebrow">How the ties played out</p>
+        <h2 id="runoffs-title">Weekly runoffs</h2>
+        <p>Only tied players compete for that week’s win. Runoffs continue each following week until one remains; ties left after Week 18 are split. Each week also has its own separate contest.</p>
+        <div data-runoff-list></div>
       </section>
     </main>
 

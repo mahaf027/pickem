@@ -865,7 +865,40 @@ body > footer p { margin: 0; }
 .pick-progress.complete { color: var(--green-bright); }
 .pick-progress.complete::after { content: " ✓"; }
 
-/* History */
+/* Pool history */
+.history-table-wrap { overflow-x: auto; }
+.history-table-wrap:focus-visible { outline: 3px solid var(--green-bright); outline-offset: -3px; }
+.history-table { width: 100%; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+.history-table th, .history-table td { padding: 12px 10px; min-width: 76px; border-bottom: 1px solid #e7e3da; text-align: center; }
+.history-table thead th { background: #f7f5ee; color: var(--ink-soft); font-size: 0.8rem; }
+.history-table small { display: block; margin-top: 5px; font-size: 0.6rem; font-weight: 500; color: var(--ink-soft); white-space: nowrap; }
+.history-table .history-player { position: sticky; left: 0; z-index: 1; min-width: 165px; max-width: 210px; text-align: left; padding-left: 22px; background: var(--panel); box-shadow: 1px 0 var(--line); font-size: 0.85rem; overflow-wrap: anywhere; }
+.history-table thead .history-player { background: #f7f5ee; }
+.history-table .current-player .history-player { background: #edfafa; }
+.history-table td { position: relative; }
+.history-score, .history-table td a { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 28px; }
+.history-table td a { color: inherit; text-underline-offset: 4px; }
+.history-table td strong { font: 600 1.15rem "Oswald", sans-serif; }
+.score-marker { font-size: 0.7rem; }
+.result-won { background: #dceedd; color: #174426; }
+.result-split { background: #f6e8b7; color: #654700; }
+.result-runoff { background: #e3edf9; color: #254c7f; }
+.result-tied { background: #f0e9df; color: #65533c; }
+.history-key { display: flex; flex-wrap: wrap; gap: 12px 20px; padding: 20px 24px; color: var(--ink-soft); font-size: 0.75rem; }
+.history-key > span { display: inline-flex; align-items: center; gap: 7px; }
+.result-badge { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 5px; }
+.history-key p { flex-basis: 100%; margin: 2px 0 0; line-height: 1.6; }
+.runoff-section { margin-top: 40px; }
+.runoff-section > p:not(.eyebrow) { max-width: 760px; color: var(--ink-soft); line-height: 1.6; font-size: 0.88rem; }
+.runoff-card { margin-top: 16px; padding: 22px 24px; border: 1px solid var(--line); background: var(--panel); scroll-margin-top: 24px; }
+.runoff-card:target { outline: 2px solid var(--green-bright); }
+.runoff-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+.runoff-heading h3 { margin: 0; font: 600 1.2rem "Oswald", sans-serif; text-transform: uppercase; }
+.result-label { padding: 6px 10px; border-radius: 5px; font-size: 0.75rem; font-weight: 700; }
+.runoff-card p, .runoff-card li { color: var(--ink-soft); font-size: 0.82rem; line-height: 1.7; }
+.runoff-card ol { padding-left: 20px; margin-bottom: 0; }
+
+/* Individual pick history */
 .stat-chips { margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 8px; }
 .stat-chip {
   padding: 10px 15px;
