@@ -95,9 +95,13 @@ test("table rendering includes half fills, four-color fills and the correct star
   const { historyTable } = await import("../assets/history.js");
   delete globalThis.document;
   const html = historyTable(fixture());
+  assert.doesNotMatch(html, /href="#runoff-/);
   assert.match(html, /linear-gradient\(135deg, #ffe69b 0% 50%, #f6bc8c 50% 100%\)/);
   assert.match(html, /<strong>9<\/strong><span class="score-marker" aria-hidden="true">\+<\/span>/);
   const four = historyTable(fixture([[15, 14, 15, 14, 13, 15, 14], [16, 14, 14, 14, 13, 15, 14]]));
   assert.match(four, /#b6d5a5 0% 25%, #ffe69b 25% 50%, #f6bc8c 50% 75%, #c7a68a 75% 100%/);
   assert.match(four, /<strong>16<\/strong><span class="score-marker" aria-hidden="true">★\+\+\+<\/span>/);
+  const grey = historyTable(fixture([[15, 14, 15, 14, 13, 15, 14], [16, 15, 15, 15, 16, 16, 15]]));
+  assert.match(grey, /#cccccc 75% 100%/);
+  assert.match(grey, /Grey trail for Week 11/);
 });
