@@ -1,11 +1,13 @@
 import { api, escapeHtml, showPageError } from "./app.js";
-import { buildTieTrails, fetchPoolHistory, resolveWeeklyWinner } from "./history-data.js?v=history-table-2";
+import { buildTieTrails, fetchPoolHistory, resolveWeeklyWinner } from "./history-data.js?v=history-table-4";
+import { renderSeasonStandings } from "./season-standings.js";
 
 export async function loadPoolHistory() {
   const loading = document.querySelector("[data-loading]");
   try {
     const data = await fetchPoolHistory(api);
-    document.querySelector("[data-season-label]").textContent = `${data.season} regular season`;
+    renderSeasonStandings(data.seasonRows, data.season);
+    document.querySelector("[data-history-season]").textContent = `${data.season} regular season`;
     loading.hidden = true;
     if (!data.rows.length || !data.weeks.some((week) => week.games)) {
       document.querySelector("[data-empty]").hidden = false;

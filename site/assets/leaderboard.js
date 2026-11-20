@@ -7,8 +7,7 @@ import {
   showPageError,
   wireLogout
 } from "./app.js";
-
-let currentData = null;
+import { renderSeasonStandings, standingsPlayerName } from "./season-standings.js";
 
 initialize();
 
@@ -31,9 +30,8 @@ async function loadLeaderboard(weekId = null) {
   try {
     const query = weekId ? `?weekId=${encodeURIComponent(weekId)}` : "";
     const data = await api(`/api/leaderboard${query}`);
-    currentData = data;
     loading.hidden = true;
-    renderSeasonStandings(data.seasonRows || []);
+    renderSeasonStandings(data.seasonRows || [], data.week?.season || new Date().getFullYear());
     if (!data.week || !data.games.length) {
       empty.hidden = false;
       return;
@@ -80,23 +78,6 @@ document.querySelectorAll("[data-week-direction]").forEach((button) => {
   });
 });
 
-function renderSeasonStandings(rows) {
-  const target = document.querySelector("[data-season-leaderboard]");
-  const season = currentData?.week?.season || new Date().getFullYear();
-  document.querySelector("[data-season-label]").textContent = `${season} regular season`;
-  target.innerHTML = `
-    <table class="season-table">
-      <thead><tr><th scope="col">Rank</th><th scope="col">Player</th><th scope="col">Correct picks</th></tr></thead>
-      <tbody>${rows.map((row) => `
-        <tr class="${row.isCurrentUser ? "current-player" : ""}">
-          <td>${row.rank}</td>
-          <th scope="row">${row.rank === 1 ? '<img class="leader-crown" src="assets/images/crown.png" alt="Season leader">' : ""}${playerName(row)}</th>
-          <td><strong>${row.correct}</strong></td>
-        </tr>`).join("")}</tbody>
-    </table>`;
-  target.hidden = false;
-}
-
 function leaderboardTable(data) {
   const teamById = new Map();
   data.games.forEach((game) => {
@@ -129,17 +110,10 @@ function gameHeader(game) {
 function playerRow(row, games, teamById) {
   return `<tr class="${row.isCurrentUser ? "current-player" : ""}">
     <td class="rank-column">${row.rank}</td>
-    <th class="player-column" scope="row">${playerName(row)}</th>
+    <th class="player-column" scope="row">${standingsPlayerName(row)}</th>
     <td class="score-column">${row.score}</td>
     ${games.map((game) => pickCell(row.picks[game.id], teamById)).join("")}
   </tr>`;
-}
-
-function playerName(row) {
-  const tag = row.isCurrentUser
-    ? " <small>You</small>"
-    : row.joined === false ? ' <small class="muted-tag">Not joined yet</small>' : "";
-  return `<a class="player-link" href="player/?id=${row.id}">${escapeHtml(row.username)}</a>${tag}`;
 }
 
 function pickCell(pick, teamById) {

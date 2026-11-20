@@ -14,8 +14,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/styles.css?v=history-table-2">
-    <script type="module" src="../assets/player.js?v=history-table-3"></script>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <script type="module" src="../assets/player.js?v=history-table-4"></script>
   </head>
   <body data-root="../" data-protected>
     <header class="site-header">
@@ -42,12 +42,21 @@
           <h1 id="page-title" data-player-name>History</h1>
         </div>
         <div class="stat-chips" data-player-stats hidden></div>
+        <section class="season-board" aria-labelledby="season-title" data-season-board hidden>
+          <div class="season-heading">
+            <div>
+              <p class="kicker" data-season-label>Regular season</p>
+              <h2 id="season-title">YTD standings</h2>
+            </div>
+          </div>
+          <div data-season-leaderboard hidden></div>
+        </section>
       </section>
 
       <section class="scoreboard" aria-labelledby="weeks-title">
         <div class="panel-heading">
           <div>
-            <p class="kicker" data-season-label>Season</p>
+            <p class="kicker" data-history-season>Season</p>
             <h2 id="weeks-title">Week by week</h2>
           </div>
           <span class="record-label" data-history-hint>Correct picks by week</span>
@@ -63,7 +72,8 @@
         <div class="history-list" data-history hidden></div>
 
         <div class="history-key" data-history-key hidden>
-          <span><b class="result-badge">$</b> Winner of that week, after any runoff</span>
+          <span><b class="result-badge">$</b> Weekly skin awarded to</span>
+          <span><b class="result-badge result-won" aria-hidden="true"></b> Outright week winner</span>
           <span><b class="result-badge trail-primary"></b> Primary tie trail</span>
           <span><b class="result-badge trail-secondary"></b> Secondary tie trail</span>
           <span><b class="result-badge trail-tertiary"></b> Tertiary tie trail</span>

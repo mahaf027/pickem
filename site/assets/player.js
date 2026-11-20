@@ -7,7 +7,7 @@ import {
   showPageError,
   wireLogout
 } from "./app.js";
-import { loadPoolHistory } from "./history.js?v=history-table-3";
+import { loadPoolHistory } from "./history.js?v=history-table-4";
 
 initialize();
 
@@ -20,6 +20,9 @@ async function initialize() {
     document.querySelector("[data-history-hint]").textContent = "Tap a week to see every pick";
     loadHistory(playerId);
   } else {
+    const standings = document.querySelector("[data-season-board]");
+    standings.parentElement.classList.add("leaderboard-heading");
+    standings.hidden = false;
     loadPoolHistory();
   }
 }
@@ -49,7 +52,7 @@ function renderHeading(data) {
   document.title = `${player.username} | Mahaffey Mutiny Pick'em`;
   document.querySelector("[data-player-name]").textContent = player.username;
   document.querySelector("[data-player-eyebrow]").textContent = player.isCurrentUser ? "Your history" : "Player history";
-  document.querySelector("[data-season-label]").textContent = `${data.season} season`;
+  document.querySelector("[data-history-season]").textContent = `${data.season} season`;
   const chips = [`<span class="stat-chip"><strong>${data.seasonCorrect}</strong> correct this season</span>`];
   if (player.splashName) chips.push(`<span class="stat-chip">Splash: ${escapeHtml(player.splashName)}</span>`);
   if (!player.joined) chips.push('<span class="stat-chip muted">Not joined yet</span>');

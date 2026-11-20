@@ -25,7 +25,8 @@ export async function fetchPoolHistory(request) {
     const completed = board?.games.filter((game) => game.completed).length || 0;
     return { number: index + 1, games, completed, complete: games > 0 && completed === games };
   });
-  const accounts = new Map((latest.seasonRows || []).map((row) => [row.id, row]));
+  const seasonRows = latest.seasonRows || [];
+  const accounts = new Map(seasonRows.map((row) => [row.id, row]));
   const scores = new Map();
   for (const [number, board] of boards) {
     for (const row of board.rows) {
@@ -40,7 +41,7 @@ export async function fetchPoolHistory(request) {
       scores: weeks.map((week) => week.completed ? scores.get(`${id}:${week.number}`) ?? 0 : null)
     }));
   weeks.forEach((week, index) => { week.result = resolveWeeklyWinner(weeks, rows, index); });
-  return { season, weeks, rows, ...buildTieTrails(weeks, rows) };
+  return { season, seasonRows, weeks, rows, ...buildTieTrails(weeks, rows) };
 }
 
 // A new weekly tie can join a trail with the same survivors. Existing trails
