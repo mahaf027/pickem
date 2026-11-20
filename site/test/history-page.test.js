@@ -16,7 +16,7 @@ test("History loads successfully with the runoff section removed", async () => {
   globalThis.fetch = async () => Response.json({ week, weeks: [week], rows, seasonRows: rows, games: [{ completed: true }] });
   try {
     // Load the exact version referenced by the page's entry module.
-    const { loadPoolHistory } = await import("../assets/history.js?v=history-table-2");
+    const { loadPoolHistory } = await import("../assets/history.js?v=history-table-3");
     await loadPoolHistory();
     assert.equal(elements.get("[data-page-error]").hidden, true);
     assert.equal(elements.get("[data-history]").hidden, false);

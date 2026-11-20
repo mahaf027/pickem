@@ -49,7 +49,7 @@ test("Weeks 7 and 8 share one yellow trail while Week 9 starts the orange trail"
   assert.equal(cells.Andrew[8].outright, false);
 });
 
-test("existing trails retain both colors after converging and award one plus each", () => {
+test("existing trails retain both colors and resolve separately after converging", () => {
   const data = fixture([[15, 14, 14, 14, 13, 15, 14], [16, 14, 14, 14, 13, 15, 14]]);
   const { trails, cells } = data;
   assert.deepEqual(trails.find((trail) => trail.id === 7).weeks, [7, 8, 10]);
@@ -69,14 +69,14 @@ test("three simultaneous trails can resolve alongside an outright win in a four-
   assert.equal(cells.Andrew[10].outright, true);
 });
 
-test("unfinished weeks cannot eliminate contenders, add colors, stars or pluses", () => {
+test("unfinished weeks cannot eliminate contenders or add trail colors", () => {
   const { trails, cells } = fixture([], [9]);
   assert.equal(trails.length, 2);
   assert.deepEqual(trails.at(-1).contenders, ["Andrew", "Nate", "Theo"]);
   for (const row of Object.values(cells)) assert.deepEqual(row[8], { trailIds: [], outright: false, resolved: [], split: false });
 });
 
-test("Week 18 splits keep trail colors and do not add runoff-win pluses", () => {
+test("Week 18 splits keep trail colors and record no runoff win", () => {
   const { rows, weeks } = fixture();
   for (const row of rows) row.scores = Array(18).fill(10);
   for (const week of weeks) week.complete = true;
@@ -89,18 +89,28 @@ test("Week 18 splits keep trail colors and do not add runoff-win pluses", () => 
   assert.deepEqual(cells.Andrew[17].resolved, []);
 });
 
-test("table rendering includes half fills, four-color fills and the correct star/plus counts", async () => {
+test("the table marks winners in the original week and preserves trail fills", async () => {
   // app.js updates footer years on import; no browser is needed to render the table.
   globalThis.document = { querySelectorAll: () => [] };
   const { historyTable } = await import("../assets/history.js");
   delete globalThis.document;
-  const html = historyTable(fixture());
+  const html = historyTable(fixture([[15, 16, 17, 14, 13, 16, 14]]));
   assert.doesNotMatch(html, /href="#runoff-/);
   assert.match(html, /linear-gradient\(135deg, #ffe69b 0% 50%, #f6bc8c 50% 100%\)/);
-  assert.match(html, /<strong>9<\/strong><span class="score-marker" aria-hidden="true">\+<\/span>/);
+  const winners = [];
+  for (const [, player, scores] of html.matchAll(/<a class="player-link" href="\?id=([^"]+)">[^<]+<\/a>.*?<\/th>(.*?)<\/tr>/gs)) {
+    for (const [index, cell] of [...scores.matchAll(/<td\b[^>]*>(.*?)<\/td>/gs)].entries()) {
+      if (cell[1].includes('class="score-marker" aria-hidden="true">$</span>')) winners.push([index + 1, player]);
+    }
+  }
+  assert.deepEqual(winners.sort(([a], [b]) => a - b), [
+    [1, "Andrew"], [2, "Nate"], [3, "Ryan"], [4, "Will"], [5, "Owen"],
+    [6, "Andrew"], [7, "Theo"], [8, "Theo"], [10, "Nate"]
+  ]);
+  assert.doesNotMatch(html, /class="score-marker"[^>]*>[★+]/);
   const four = historyTable(fixture([[15, 14, 15, 14, 13, 15, 14], [16, 14, 14, 14, 13, 15, 14]]));
   assert.match(four, /#b6d5a5 0% 25%, #ffe69b 25% 50%, #f6bc8c 50% 75%, #c7a68a 75% 100%/);
-  assert.match(four, /<strong>16<\/strong><span class="score-marker" aria-hidden="true">★\+\+\+<\/span>/);
+  assert.match(four, /<strong>16<\/strong><span class="score-marker" aria-hidden="true">\$<\/span>/);
   const grey = historyTable(fixture([[15, 14, 15, 14, 13, 15, 14], [16, 15, 15, 15, 16, 16, 15]]));
   assert.match(grey, /#cccccc 75% 100%/);
   assert.match(grey, /Grey trail for Week 11/);

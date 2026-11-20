@@ -1,5 +1,5 @@
 import { api, escapeHtml, showPageError } from "./app.js";
-import { buildTieTrails, fetchPoolHistory } from "./history-data.js?v=history-table-2";
+import { buildTieTrails, fetchPoolHistory, resolveWeeklyWinner } from "./history-data.js?v=history-table-2";
 
 export async function loadPoolHistory() {
   const loading = document.querySelector("[data-loading]");
@@ -27,6 +27,7 @@ export async function loadPoolHistory() {
 
 export function historyTable({ season, weeks, rows, trails, cells }) {
   if (!trails || !cells) ({ trails, cells } = buildTieTrails(weeks, rows));
+  const results = weeks.map((week, index) => week.result ?? resolveWeeklyWinner(weeks, rows, index));
   return `<table class="history-table">
     <caption class="sr-only">${season} regular season correct picks for every pool member</caption>
     <thead><tr><th scope="col" class="history-player">Player</th>
@@ -34,7 +35,7 @@ export function historyTable({ season, weeks, rows, trails, cells }) {
     </tr></thead>
     <tbody>${rows.map((row) => `<tr class="${row.isCurrentUser ? "current-player" : ""}">
       <th scope="row" class="history-player"><a class="player-link" href="?id=${encodeURIComponent(row.id)}">${escapeHtml(row.username)}</a>${row.isCurrentUser ? '<small>You</small>' : !row.joined ? '<small>Not joined yet</small>' : ""}</th>
-      ${weeks.map((week, index) => scoreCell(row, week, index, trails, cells[row.id][index])).join("")}
+      ${weeks.map((week, index) => scoreCell(row, week, index, trails, cells[row.id][index], results[index])).join("")}
     </tr>`).join("")}</tbody>
   </table>`;
 }
@@ -51,12 +52,13 @@ export function cellBackground(colors) {
   return `linear-gradient(135deg, ${colors.map((color, index) => `${color} ${index * 100 / colors.length}% ${(index + 1) * 100 / colors.length}%`).join(", ")})`;
 }
 
-function scoreCell(row, week, index, trails, cell) {
+function scoreCell(row, week, index, trails, cell, result) {
   const memberships = cell.trailIds.map((id) => trails.find((trail) => trail.id === id));
   const colors = [...(cell.outright ? ["#b6d5a5"] : []), ...memberships.map(trailColor)];
-  const symbols = `${cell.outright ? "★" : ""}${"+".repeat(cell.resolved.length)}${cell.split ? "÷" : ""}`;
+  const won = result.status === "won" && result.winners.includes(row.id);
+  const symbols = `${won ? "$" : ""}${cell.split ? "÷" : ""}`;
   const details = [
-    ...(cell.outright ? ["Outright weekly winner"] : []),
+    ...(won ? [cell.outright ? "Outright weekly winner" : "Weekly winner by runoff"] : []),
     ...memberships.map((trail) => `${trailName(trail)} trail for ${weekNames(trail)}${cell.resolved.includes(trail.id) ? `: runoff won, ${trail.weeks.length} weekly ${trail.weeks.length === 1 ? "win" : "wins"}` : cell.split ? ": split at Week 18" : ": tied contender"}`)
   ].join(". ");
   const score = row.scores[index] ?? "—";
