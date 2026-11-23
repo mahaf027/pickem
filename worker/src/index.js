@@ -246,12 +246,22 @@ async function savePick(gameId, user, request, env, cors) {
 }
 
 async function getLeaderboard(user, env, cors, requestedWeekId = null) {
-  await applyAutomaticPicks(env, new Date());
+  const now = new Date();
+  await applyAutomaticPicks(env, now);
   const { results: weeks } = await env.DB.prepare(
-    "SELECT * FROM weeks ORDER BY window_start DESC"
-  ).all();
-  // Unknown week ids (stale links) fall back to the latest week.
-  const week = weeks.find((candidate) => String(candidate.id) === String(requestedWeekId)) || weeks[0];
+    `SELECT w.*, EXISTS (
+       SELECT 1 FROM games g WHERE g.week_id = w.id AND g.start_time <= ?
+     ) AS started
+       FROM weeks w ORDER BY w.window_start DESC`
+  ).bind(now.toISOString()).all();
+  let week;
+  if (requestedWeekId === "current") {
+    // Before opening kickoff, show the first available week.
+    week = weeks.find((candidate) => candidate.started) || weeks.at(-1);
+  } else {
+    // Unknown week ids (stale links) fall back to the latest week.
+    week = weeks.find((candidate) => String(candidate.id) === requestedWeekId) || weeks[0];
+  }
 
   const season = week?.season || new Date().getFullYear();
   const { results: seasonAccounts } = await env.DB.prepare(
@@ -280,7 +290,6 @@ async function getLeaderboard(user, env, cors, requestedWeekId = null) {
             status, completed, winner_team_id
        FROM games WHERE week_id = ? ORDER BY start_time, id`
   ).bind(week.id).all();
-  const now = new Date();
   const picksRevealed = now >= new Date(week.reveal_at);
   const { results: accounts } = await env.DB.prepare(
     "SELECT id, username, claimed_at, splash_name FROM users ORDER BY username COLLATE NOCASE"

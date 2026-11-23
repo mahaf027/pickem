@@ -44,7 +44,7 @@ async function loadLeaderboard(weekId = null) {
     board.innerHTML = leaderboardTable(data);
     board.hidden = false;
     const url = new URL(location.href);
-    url.searchParams.set("week", data.week.id);
+    url.searchParams.set("week", weekId === "current" ? "current" : data.week.id);
     history.replaceState({}, "", url);
   } catch (error) {
     loading.hidden = true;

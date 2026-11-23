@@ -8,7 +8,9 @@
     <title>Leaderboard | Mahaffey Mutiny Pick'em</title>
     <script>
       if (!localStorage.getItem("pickem.session")) {
-        location.replace(new URL("access/", location.href));
+        const accessUrl = new URL("access/", location.href);
+        if (location.search) accessUrl.searchParams.set("next", location.search);
+        location.replace(accessUrl);
       }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
